@@ -1,0 +1,17 @@
+Les paramètres qu'il faut faire varier dans le fichier cache.cfg avant de lancer des simulations :
+
+-size (bytes) valeurChoisie                          #taille de cache
+-block size (bytes) valeurChoisie                    #taille de bloc
+-associativity valeurChoisie                         #degré d'associativité
+
+
+#Exemple pour simuler les paramètres du cortex A15 : 
+# Configuration pour le Cortex A15
+-size (bytes) 32768  // Taille de la cache L1 d'instructions (32KB)
+-size (bytes) 32768  // Taille de la cache L1 de données (32KB)
+-size (bytes) 524288 // Taille de la cache L2 (512 KB)
+
+-block size (bytes) 64 // Taille de bloc pour toutes les caches (64 pour les caches)
+
+-associativity 2 // Associativité pour les caches L1
+-associativity 16 // Associativité pour la cache L2
