@@ -29,6 +29,14 @@ sim_inst_class_prof.end_dist
 
 (compris entre les lignes 61 et 69)
 
+et aussi les lignes 102 (lw), sw (110), et les lignes 136 à 145 qui correspondent aux additions, soustraction, multiplication et division. à chaque fois on regarde la dernière colonne qui 
+correspond à la proportion de ce type d'instruction. Parmi les lignes 136 à 145, on retrouve :
+ - add, addi, addu, addiu qui sont juste des additions, la différence entre ces 4 opérations, c'est le types des arguments, par exemple addu prend des entiers unsigned mais on s'en fou
+
+ enfait il faut additionner la proportion des additions (lignes 136 à 139), la proporiton des soustraction (140 et 141)...
+
+ C'est important parceque on peut spécifier le nombre de multiplieurs/diviseurs entiers et flottant du processeur qu'on construit. Historuquement, les ALUs ne pouvaient faire que des  additions et soustractions, et il peut y avoir des unité spécialisé dans la division et la multipication. 
+
 **détaille des classes d'instruction**
 
 - load : le nombre de chargement depuis la mémoire
@@ -53,6 +61,9 @@ sim-profile -redir:sim ./profiling_dij -iclass true -iprof true dijkstra_small.s
 
 Pour l'analyse des résultats c'est le même principe que pour blowfish
 
+
+
+
 ## Question 2
 
 Dans le cas de blowfish, les instructions majoritaires sont les écritures mémoires (41%) et les calculs en nombre entier (35%). Les branchements conditionelles occupent près de 12% des instructions et les chargements depuis la mémoire 8%. Le profiling de dijkstra est assez simialaire, avec cette fois plus de chargement depuis la mémoire que d'écriture. Pour obtenir de meilleure performances, il serait judicieux de multiplier les ALUs pour paralléliser les calculs entier, et d'avoir un bon prédicteur de branchement. Le grand nombre d'accès mémoire reste néanmoins un problème. 
@@ -69,7 +80,7 @@ La question 3 demande de comparer dijkstra, BlowFish, SSCA2-BCS, SHA-1 et le pro
 
 **Pour lancer le profiling**
 
-sim-profile -redir:sim ./profiling_SSCA -iclass true SSCA2.ss 
+sim-profile -redir:sim ./profiling_SSCA -iclass true -iprof true SSCA2.ss 
 
 **Pour SHA-1**
 
@@ -81,7 +92,7 @@ sim-profile -redir:sim ./profiling_SSCA -iclass true SSCA2.ss
 
 **Pour lancer le profiling**
 
-- sim-profile -redir:sim ./profiling_SSCA -iclass true SSCA2.ss input_small.asc
+- sim-profile -redir:sim ./profiling_SSCA -iclass true -iprof true SSCA2.ss input_small.asc
 
 
 **Pour le produit de polynômes**
@@ -90,10 +101,14 @@ sim-profile -redir:sim ./profiling_SSCA -iclass true SSCA2.ss
 - cp -r /home/g/gbusnot/ES201/TPs/TP2 ./polynome
 
 **Pour lancer le profiling**
-- sim-profile -redir:sim ./profiling_POLY -iclass true poly_mult.ss
+- sim-profile -redir:sim ./profiling_POLY -iclass true -iprof true poly_mult.ss
 
 On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opération en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynôme requiert également - et à la différence des autres benchmark- une grande part de calcul en nombre flottant (15%).
 
 
+## Question 4
 
+### utilisation de sim-outorder : 
 
+sim-outorder -redir:sim ./sim_dij -fetch:ifqsize 8 -decode:width 4 -issue:inorder false -issue:width 8 -commit:width 4 -ruu:size 16 -lsq:size 16 -res:imult 1 -res:ialu 5 -res:fpalu 1 -res:fpmult 1 -bpred:2lev 1 1024 8 0 -bpred:btb 256 2 -fetch:mplat 15 -cache:dl1 dl1:32:64:2:l -cache:il1 il1:32:64:2:l -cache:dl2 ul2:512:64:16:l  dijkstra_small.ss i
+nput.dat et bf.ss input_small.asc
