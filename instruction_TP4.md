@@ -43,7 +43,7 @@ sim_inst_class_prof.end_dist
 
 **Copier et compiler le benchmark dans votre répertoire local**
 
-- cp /home/g/gbusnot/ES201/tools/graph/ dijkstra <your directory>
+- cp /home/g/gbusnot/ES201/tools/graph/dijkstra <your directory>
 - make clean
 - make all
 
@@ -52,6 +52,47 @@ sim_inst_class_prof.end_dist
 sim-profile -redir:sim ./profiling_dij -iclass true -iprof true dijkstra_small.ss input.dat et bf.ss input_small.asc
 
 Pour l'analyse des résultats c'est le même principe que pour blowfish
+
+## Question 2
+
+Dans le cas de blowfish, les instructions majoritaires sont les écritures mémoires (41%) et les calculs en nombre entier (35%). Les branchements conditionelles occupent près de 12% des instructions et les chargements depuis la mémoire 8%. Le profiling de dijkstra est assez simialaire, avec cette fois plus de chargement depuis la mémoire que d'écriture. Pour obtenir de meilleure performances, il serait judicieux de multiplier les ALUs pour paralléliser les calculs entier, et d'avoir un bon prédicteur de branchement. Le grand nombre d'accès mémoire reste néanmoins un problème. 
+
+## Question 3
+
+La question 3 demande de comparer dijkstra, BlowFish, SSCA2-BCS, SHA-1 et le produit de polynômes
+
+**Pour SSCA2**
+
+**Copier et compiler le benchmark dans votre répertoire local**
+
+- cp /home/g/gbusnot/ES201/tools/graph/SSCA2v2-C <your directory>
+
+**Pour lancer le profiling**
+
+sim-profile -redir:sim ./profiling_SSCA -iclass true SSCA2.ss 
+
+**Pour SHA-1**
+
+**Copier et compiler le benchmark dans votre répertoire local**
+
+- cp /home/g/gbusnot/ES201/tools/sha_modified.tar.gz <your_directory>
+- tar xzf <your_directory>/sha_modified.tar.gz <your directory>
+
+
+**Pour lancer le profiling**
+
+- sim-profile -redir:sim ./profiling_SSCA -iclass true SSCA2.ss input_small.asc
+
+
+**Pour le produit de polynômes**
+
+**Copier et compiler le benchmark dans votre répertoire local**
+- cp -r /home/g/gbusnot/ES201/TPs/TP2 ./polynome
+
+**Pour lancer le profiling**
+- sim-profile -redir:sim ./profiling_POLY -iclass true poly_mult.ss
+
+On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opération en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynôme requiert également - et à la différence des autres benchmark- une grande part de calcul en nombre flottant (15%).
 
 
 
