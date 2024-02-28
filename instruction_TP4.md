@@ -174,6 +174,10 @@ cache d'un autre coeur
 
 **Les lignes qui nous intéressent sont les lignes : 195 à 198, 205 à 208, 215 à 218**
 
+J'ai fait un fichier bash pour exécuter le fichier `generate_output_dijkstra.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier dijkstra
 
+`chmod +x generate_output_dijkstra.sh`
+`./generate_output_dijkstra 1 2 4 8 16 32`
 
-140, 147 (sim_CPI, le nombre de cycles), le miss_rate pour les instruction l1 (ligne 195) et pour dcache 1 ligne 205
+Cela créer les fichiers sim_dij_1 à sim_dij_32.
+
