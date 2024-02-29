@@ -15,8 +15,9 @@ make
 
 **pour lancer le profiling**
 
+```
 sim-profile -redir:sim ./profiling -iclass true -iprof true bf.ss e input_small.asc output.enc 123456789abcdeffedcba0987654321
-
+```
 les résultats sont chargés dans le fichier profiling, les lignes qui nous intéressent sont les suivantes:
 
 >sim_inst_class_prof.start_dist
@@ -60,8 +61,9 @@ make all
 
 **Pour lancer le profiling**
 
+```
 sim-profile -redir:sim ./profiling_dij -iclass true -iprof true dijkstra_small.ss input.dat et bf.ss input_small.asc
-
+```
 Pour l'analyse des résultats c'est le même principe que pour blowfish
 
 
@@ -174,10 +176,18 @@ cache d'un autre coeur
 
 **Les lignes qui nous intéressent sont les lignes : 195 à 198, 205 à 208, 215 à 218**
 
+#### Pour dijkstra
 J'ai fait un fichier bash pour exécuter le fichier `generate_output_dijkstra.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier dijkstra
 
 `chmod +x generate_output_dijkstra.sh`
 `./generate_output_dijkstra 1 2 4 8 16 32`
 
 Cela créer les fichiers sim_dij_1 à sim_dij_32.
+ 
+#### Pour Blowfish
+J'ai fait un fichier bash pour exécuter le fichier `generate_output_blowfish.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier blowfish
 
+`chmod +x generate_output_blowfish.sh`
+`./generate_output_blowfish 1 2 4 8 16 32`
+
+Cela créer les fichiers sim_blow_1 à sim_blow_32.
