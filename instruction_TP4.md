@@ -177,17 +177,35 @@ cache d'un autre coeur
 **Les lignes qui nous intéressent sont les lignes : 195 à 198, 205 à 208, 215 à 218**
 
 #### Pour dijkstra
-J'ai fait un fichier bash pour exécuter le fichier `generate_output_dijkstra.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier dijkstra
+J'ai fait un fichier bash pour exécuter le fichier `generate_output_dijkstra_A7.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier dijkstra
 
-`chmod +x generate_output_dijkstra.sh`
-`./generate_output_dijkstra 1 2 4 8 16 32`
+`chmod +x generate_output_dijkstra_A7.sh`
+`./generate_output_dijkstra_A7.sh 1 2 4 8 16 32`
 
-Cela créer les fichiers sim_dij_1 à sim_dij_32.
+Cela créer les fichiers sim_dij_A7_1 à sim_dij_A7_32.
  
 #### Pour Blowfish
-J'ai fait un fichier bash pour exécuter le fichier `generate_output_blowfish.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier blowfish
+J'ai fait un fichier bash pour exécuter le fichier `generate_output_blowfish_A7.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier blowfish
 
-`chmod +x generate_output_blowfish.sh`
-`./generate_output_blowfish 1 2 4 8 16 32`
+`chmod +x generate_output_blowfish_A7.sh`
+`./generate_output_blowfish_A7.sh 1 2 4 8 16 32`
 
-Cela créer les fichiers sim_blow_1 à sim_blow_32.
+Cela créer les fichiers sim_blow_A7_1 à sim_blow_A7_32.
+
+## Question 5
+
+#### Pour dijkstra
+J'ai fait un fichier bash pour exécuter le fichier `generate_output_dijkstra_A15.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier dijkstra
+
+`chmod +x generate_output_dijkstra_A15.sh`
+`./generate_output_dijkstra_A15.sh 1 2 4 8 16 32`
+
+Cela créer les fichiers sim_dij_A15_1 à sim_dij_A15_32.
+ 
+#### Pour Blowfish
+J'ai fait un fichier bash pour exécuter le fichier `generate_output_blowfish_A15.sh`, il faut lui donner des privilèges d'exécution et le placer dans le dossier blowfish
+
+`chmod +x generate_output_blowfish_A15.sh`
+`./generate_output_blowfish_A15.sh 1 2 4 8 16 32`
+
+Cela créer les fichiers sim_blow_A15_1 à sim_blow_A15_32.
