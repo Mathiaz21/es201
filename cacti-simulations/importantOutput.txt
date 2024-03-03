@@ -1,4 +1,5 @@
 Les données qu'il faut récupérer à la fin des simulations (dans les fichier du style defaultCacheResult.txt):
 
 -technology (u)                         #taille des transistors en µm, entre [0.028, 0.032]
--Cache height x width (mm):             #longueur x largeur en mm de la forme 0.350225 x 1.38368
+-Data array: Area (mm2):                #surface de cache L1 pour les données
+-Tag array: Area (mm2):                 #surface de cache L1 pour les tags
