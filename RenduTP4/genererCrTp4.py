@@ -248,7 +248,26 @@ contenu_rapport += """
 Comparons les résultats précédents avec 3 profilings supplémentaires : SSCA2-BCH, SHA-1 et le produit de polynômes.
 
 Voici les résultats pour le profiling de SSCA2-BCH :
+
+**Pour le benchmark SSCA2**
+
+```
+sim-profile -redir:sim ./profiling_SSCA -iclass true -iprof true SSCA2.ss input_small.asc
+```
+
+**Pour le benchmark SHA**
+
+```
+sim-profile -redir:sim ./profiling_SHA -iclass true -iprof true sha.ss input_small.asc
+```
+
+**Pour le produit de polynôme**
+
+`sim-profile -redir:sim ./profiling_POLY -iclass true -iprof true poly_mult.ss`
+
 """
+
+
 
 contenu_rapport += tableauDePerfs(str_profiling_SSCA2, liste_operations_basic)
 
