@@ -234,7 +234,7 @@ f = open("simulations/profiling_dij_ssca2v2", "r")
 str_profiling_SSCA2 = f.read()
 f.close()
 
-f = open("simulation/profiling_SHA", "r")
+f = open("simulations/profiling_SHA", "r")
 str_profiling_SHA = f.read()
 f.close()
 
@@ -252,7 +252,9 @@ Voici les résultats pour le profiling de SSCA2-BCH :
 
 contenu_rapport += tableauDePerfs(str_profiling_SSCA2, liste_operations_basic)
 
-contenu_rapport += "\nVoici les résultats du profiling pour SHA-1 \n (Echec de ma part de les faire marcher)"
+contenu_rapport += "\nVoici les résultats du profiling pour SHA-1"
+
+contenu_rapport += tableauDePerfs(str_profiling_SHA, liste_operations_basic)
 
 contenu_rapport += "\nVoici les résultats du profiling pour le produit de pôlynomes :\n"
 
