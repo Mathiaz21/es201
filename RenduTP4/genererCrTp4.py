@@ -8,6 +8,13 @@ import matplotlib.pyplot as plt
 # Besoin d'avoir les fichiers de profiling compilés dans le même répertoire, sous les noms suivants :
 # profiling, profiling_dij, profiling_dij_ssca2v2, profiling_POLY
 
+# --------------------------------------------------------------------------
+
+# --------------------- UTILITAIRES POUR LE RAPPORT ------------------------
+
+# --------------------------------------------------------------------------
+
+
 nom_rapport = "Compte_Rendu_Tp4_ES101.md"
 f = open("simulations/profiling", "r")
 str_profiling_blowfish = f.read()
@@ -26,32 +33,70 @@ def findBlowfishPdf(nomParametre, str_profiling):
         print("No correlation !")
         return None
 
-def tableauDePerfs(str_profiling):
+def tableauDePerfs(str_profiling, liste_operations):
     result_str = """
 | Opération | Pourcentage d'utilisation |
 |:----------|:-------------------------:|
 """
-    liste_operations_1 = ["load", "store", "uncond branch", "cond branch", "int computation"]
-    for op in liste_operations_1:
-        result_str += "| " + op + " | " + findBlowfishPdf(op, str_profiling) + " |\n"
-    liste_operations_2 = [  
-            ["lw       t,o(b)", "lw"],
-            ["sw       t,o(b)", "sw"],
-            ["add      d,s,t", "add"],
-            ["addi     t,s,i", "addi"],
-            ["addu     d,s,t", "addu"], 
-            ["addiu    t,s,i", "addiu"], 
-            ["sub      d,s,t", "sub"], 
-            ["subu     d,s,t", "subu"], 
-            ["mult     s,t", "mult"],
-            ["multu    s,t", "multu"],
-            ["div      s,t", "div"],
-            ["divu     s,t", "divu"]
-                        ]
-    for op in liste_operations_2:
+    for op in liste_operations:
         result_str += "| " + op[1] + " | " + findBlowfishPdf(op[0], str_profiling) + " |\n"
     return result_str
 
+def str_integration_image(str_src, prc_largeur):
+    str_result = """<div style="text-align:center;">
+  <img src="plots/{}" alt="Description of the image" style="width:{}%;" />
+</div>""".format(str_src, prc_largeur)
+    return str_result
+
+
+def imprimer_plot(abscisses, liste_simulations, parametre, nom_fichier_sortie,
+                  titre_plot="un plot", axe_x="x axis", axe_y="y axis"):
+
+    X_positions = range(len(abscisses))
+    Y = []
+    for sim in liste_simulations:
+        y = extraire_valeur(parametre, sim)
+        if "." in y:
+            y = float(y)
+        else:
+            y = int(y)
+        Y.append(y)
+    plt.bar(X_positions, Y)
+    plt.xticks(X_positions, abscisses)
+    plt.title(titre_plot)
+    plt.xlabel(axe_x)
+    plt.ylabel(axe_y)
+    plt.savefig("plots/"+nom_fichier_sortie)
+
+def imprimer_multi_plot(is_A7, liste_simulations, liste_parametres, nom_fichier_sortie,
+                  titres_plot=["Fig 1", "Fig 2", "Fig 3"], axes_x=["x1", "x2", "x3"],
+                  axes_y=["y1", "y2", "y3"]):
+    if(is_A7):
+        X = [1,2,4,8,16]
+    else:
+        X = [2,4,8,16,32]
+    X_positions = range(len(X))
+    plt.figure(figsize=(3*len(liste_parametres), 3))
+    for i in range(len(liste_parametres)):
+        Y = []
+        for sim in liste_simulations:
+            y = extraire_valeur(liste_parametres[i], sim)
+            if "." in y:
+                y = float(y)
+            else:
+                y = int(y)
+            Y.append(y)
+        print(Y)
+        plt.subplot(101 + 10*(len(liste_parametres)) + i)
+        plt.bar(X_positions, Y)
+        plt.xticks(X_positions, X)
+        plt.title(titres_plot[i])
+        plt.xlabel(axes_x[i])
+        plt.ylabel(axes_y[i])
+    plt.subplots_adjust(wspace=0.3) 
+    plt.tight_layout()
+    plt.savefig("plots/"+nom_fichier_sortie)
+    
 # --------------------------------------------------------------------------
 
 # ------------------- DÉBUT DU RAPPORT ET QUESTION 1 -----------------------
@@ -70,7 +115,36 @@ Commençons par traiter le cas du Blowfish :
 Tableau retraçant l'utilisation des différentes opérations : \n
 """
 
-contenu_rapport += tableauDePerfs(str_profiling_blowfish)
+
+liste_operations_basic = [
+    ["load", "load"],
+    ["store", "store"], 
+    ["uncond branch", "uncond branch"], 
+    ["cond branch", "cond branch"], 
+    ["int computation", "int computation"],
+    ["fp computation", "fp computation"],
+    ["trap", "trap"]
+]
+
+liste_detail_calcul = [
+    ["add      d,s,t", "add"],
+    ["addi     t,s,i", "addi"],
+    ["addu     d,s,t", "addu"], 
+    ["addiu    t,s,i", "addiu"], 
+    ["sub      d,s,t", "sub"], 
+    ["subu     d,s,t", "subu"], 
+    ["mult     s,t", "mult"],
+    ["multu    s,t", "multu"],
+    ["div      s,t", "div"],
+    ["divu     s,t", "divu"]
+]
+
+contenu_rapport += tableauDePerfs(str_profiling_blowfish, liste_operations_basic)
+
+contenu_rapport += tableauDePerfs(str_profiling_blowfish, liste_detail_calcul)
+
+abscisse_values = [d[1] for d in liste_detail_calcul]
+imprimer_multi_plot(abscisse_values, )
 
 contenu_rapport += """
 On remarque que les opérations les plus fréquemment appelées sont les additions d'entiers non signés. Les autres opérations ne sont, hormis la soustraction d'entiers non-signés "subu" qui est appelée un nombre de fois négligeable, même pas appelées du tout.
@@ -78,7 +152,7 @@ On remarque que les opérations les plus fréquemment appelées sont les additio
 Maintenant voyons quels résulats l'on obtient avec le profiling avec l'algorithme de Dijkstra :
 """
 
-contenu_rapport += tableauDePerfs(str_profiling_dij)
+contenu_rapport += tableauDePerfs(str_profiling_dij, liste_operations_basic)
 
 contenu_rapport += """
 Bien que le résultat soit un peu plus équilibré, les opérations d'addition d'entiers non-signés restent largement majoritaires.
@@ -119,13 +193,13 @@ Comparons les résultats précédents avec 3 profilings supplémentaires : SSCA2
 Voici les résultats pour le profiling de SSCA2-BCH :
 """
 
-contenu_rapport += tableauDePerfs(str_profiling_SSCA2)
+contenu_rapport += tableauDePerfs(str_profiling_SSCA2, liste_operations_basic)
 
 contenu_rapport += "\nVoici les résultats du profiling pour SHA-1 \n (Echec de ma part de les faire marcher)"
 
 contenu_rapport += "\nVoici les résultats du profiling pour le produit de pôlynomes :\n"
 
-contenu_rapport += tableauDePerfs(str_profiling_poly)
+contenu_rapport += tableauDePerfs(str_profiling_poly, liste_operations_basic)
 
 contenu_rapport += """
 On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opérations en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynôme requiert également - et à la différence des autres benchmark- une grande part de calcul en nombres flottants (15%), ainsi qu'une part conséquente de soustraction de nombres entiers non-signés.
@@ -156,57 +230,7 @@ def tableau_de_perfs2(str_profiling, tab_parametres):
         result_str += "| " + par[0] + " | " + extraire_valeur(par[0], str_profiling) + " | " + par[1] + " |\n"
     return result_str
 
-def imprimer_plot(is_A7, liste_simulations, parametre, nom_fichier_sortie,
-                  titre_plot="un plot", axe_x="x axis", axe_y="y axis"):
-    if(is_A7):
-        X = [1,2,4,8,16]
-    else:
-        X = [2,4,8,16,32]
-    X_positions = range(len(X))
-    Y = []
-    for sim in liste_simulations:
-        y = extraire_valeur(parametre, sim)
-        if "." in y:
-            y = float(y)
-        else:
-            y = int(y)
-        Y.append(y)
-    plt.bar(X_positions, Y)
-    plt.xticks(X_positions, X)
-    plt.title(titre_plot)
-    plt.xlabel(axe_x)
-    plt.ylabel(axe_y)
-    plt.savefig("plots/"+nom_fichier_sortie)
 
-def imprimer_triple_plot(is_A7, liste_simulations, liste_parametres, nom_fichier_sortie,
-                  titres_plot=["Fig 1", "Fig 2", "Fig 3"], axes_x=["x1", "x2", "x3"],
-                  axes_y=["y1", "y2", "y3"]):
-    if(is_A7):
-        X = [1,2,4,8,16]
-    else:
-        X = [2,4,8,16,32]
-    X_positions = range(len(X))
-    plt.figure(figsize=(3*len(liste_parametres), 3))
-    for i in range(len(liste_parametres)):
-        Y = []
-        for sim in liste_simulations:
-            y = extraire_valeur(liste_parametres[i], sim)
-            if "." in y:
-                y = float(y)
-            else:
-                y = int(y)
-            Y.append(y)
-        print(Y)
-        plt.subplot(101 + 10*(len(liste_parametres)) + i)
-        plt.bar(X_positions, Y)
-        plt.xticks(X_positions, X)
-        plt.title(titres_plot[i])
-        plt.xlabel(axes_x[i])
-        plt.ylabel(axes_y[i])
-    plt.subplots_adjust(wspace=0.3) 
-    plt.tight_layout()
-    plt.savefig("plots/"+nom_fichier_sortie)
-    
 
 contenu_rapport += """
 ## Question 4 :
@@ -280,13 +304,11 @@ Voici maintenant quelques graphes montrant les différences de performances pour
 titles = ["Nombre Lookups", "Nombre Updates", "Nombre Addr Hits"]
 axesX = ["Taille cache L1 en KB"] * 3
 axesY = [""] * 3
-imprimer_triple_plot(True, liste_simulations_dij_A7, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A7_dij", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A7_dij", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+
+contenu_rapport += str_integration_image("Triple_plot_branche_A7_dij.png","75")
 
 contenu_rapport += """
-<div style="text-align:center;">
-  <img src="plots/Triple_plot_branche_A7_dij.png" alt="Description of the image" style="width:75%;" />
-</div>
-
 On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
 
 ### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
@@ -295,13 +317,9 @@ On constate que les différences de performance pour la prédiction de branche s
 titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
 axesX = ["Taille cache L1 en KB"] * 3
 axesY = [""] * 3
-imprimer_triple_plot(True, liste_simulations_dij_A7, ["sim_IPC", "sim_cycle"], "Double_plot_perf_A7_dij", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["sim_IPC", "sim_cycle"], "Double_plot_perf_A7_dij", titres_plot=titles, axes_x=axesX, axes_y=axesY)
 
-contenu_rapport += """
-<div style="text-align:center;">
-  <img src="plots/Double_plot_perf_A7_dij.png" alt="Description of the image" style="width:75%;" />
-</div>
-"""
+contenu_rapport += str_integration_image("Double_plot_perf_A7_dij.png", "50")
 
 
 liste_simulations_blowfish_A7 = []

@@ -16,8 +16,11 @@ Tableau retraçant l'utilisation des différentes opérations :
 | uncond branch | 2.75 |
 | cond branch | 8.83 |
 | int computation | 59.95 |
-| lw | 17.44 |
-| sw | 3.27 |
+| fp computation | 0.00 |
+| trap | 0.00 |
+
+| Opération | Pourcentage d'utilisation |
+|:----------|:-------------------------:|
 | add | 0.00 |
 | addi | 0.00 |
 | addu | 15.92 |
@@ -40,18 +43,8 @@ Maintenant voyons quels résulats l'on obtient avec le profiling avec l'algorith
 | uncond branch | 1.06 |
 | cond branch | 14.69 |
 | int computation | 49.77 |
-| lw | 24.08 |
-| sw | 10.32 |
-| add | 0.00 |
-| addi | 0.00 |
-| addu | 19.01 |
-| addiu | 5.73 |
-| sub | 0.00 |
-| subu | 0.13 |
-| mult | 0.01 |
-| multu | 0.00 |
-| div | 0.00 |
-| divu | 0.01 |
+| fp computation | 0.00 |
+| trap | 0.00 |
 
 Bien que le résultat soit un peu plus équilibré, les opérations d'addition d'entiers non-signés restent largement majoritaires.
 
@@ -73,18 +66,8 @@ Voici les résultats pour le profiling de SSCA2-BCH :
 | uncond branch | 1.06 |
 | cond branch | 14.69 |
 | int computation | 49.77 |
-| lw | 24.08 |
-| sw | 10.32 |
-| add | 0.00 |
-| addi | 0.00 |
-| addu | 19.01 |
-| addiu | 5.73 |
-| sub | 0.00 |
-| subu | 0.13 |
-| mult | 0.01 |
-| multu | 0.00 |
-| div | 0.00 |
-| divu | 0.01 |
+| fp computation | 0.00 |
+| trap | 0.00 |
 
 Voici les résultats du profiling pour SHA-1 
  (Echec de ma part de les faire marcher)
@@ -97,18 +80,8 @@ Voici les résultats du profiling pour le produit de pôlynomes :
 | uncond branch | 0.00 |
 | cond branch | 7.70 |
 | int computation | 46.16 |
-| lw | 0.00 |
-| sw | 0.02 |
-| add | 0.00 |
-| addi | 0.00 |
-| addu | 7.71 |
-| addiu | 15.39 |
-| sub | 0.00 |
-| subu | 7.69 |
-| mult | 0.00 |
-| multu | 0.00 |
-| div | 0.00 |
-| divu | 0.00 |
+| fp computation | 15.37 |
+| trap | 0.00 |
 
 On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opérations en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynôme requiert également - et à la différence des autres benchmark- une grande part de calcul en nombres flottants (15%), ainsi qu'une part conséquente de soustraction de nombres entiers non-signés.
 
@@ -156,19 +129,15 @@ Du point de vue du cache L1 nous avons aussi les informations suivantes :
 Voici maintenant quelques graphes montrant les différences de performances pour différentes tailles de cache L1 :
 
 ### Diagramme en barres de 3 indicateurs de performance de prédiction de branche lors de l'exécution de l'algorithme de Djsktra
-
 <div style="text-align:center;">
   <img src="plots/Triple_plot_branche_A7_dij.png" alt="Description of the image" style="width:75%;" />
 </div>
-
 On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
 
 ### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
-
 <div style="text-align:center;">
-  <img src="plots/Double_plot_perf_A7_dij.png" alt="Description of the image" style="width:75%;" />
+  <img src="plots/Double_plot_perf_A7_dij.png" alt="Description of the image" style="width:50%;" />
 </div>
-
 ## Question 6
 
 Dans le fichie cache.cfg initial, present dans le repertoire du cours, on a les informations par défaut suivantes : 
