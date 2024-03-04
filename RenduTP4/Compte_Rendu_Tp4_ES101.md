@@ -105,6 +105,23 @@ Dans le cas de blowfish, les instructions majoritaires sont les écritures mémo
 
 Comparons les résultats précédents avec 3 profilings supplémentaires : SSCA2-BCH, SHA-1 et le produit de polynômes.
 
+
+**Pour le benchmark SSCA2**
+
+```
+sim-profile -redir:sim ./profiling_SSCA -iclass true -iprof true SSCA2.ss input_small.asc
+```
+
+**Pour le benchmark SHA**
+
+```
+sim-profile -redir:sim ./profiling_SHA -iclass true -iprof true sha.ss input_small.asc
+```
+
+**Pour le produit de polynôme**
+
+`sim-profile -redir:sim ./profiling_POLY -iclass true -iprof true poly_mult.ss`
+
 Voici les résultats pour le profiling de SSCA2-BCH :
 
 | Opération | Pourcentage d'utilisation |
@@ -143,6 +160,14 @@ Voici les résultats du profiling pour le produit de pôlynomes :
 On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opérations en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynôme requiert également - et à la différence des autres benchmark- une grande part de calcul en nombres flottants (15%), ainsi qu'une part conséquente de soustraction de nombres entiers non-signés.
 
 ## Question 4 :
+
+### utilisation de sim-outorder : 
+
+```
+sim-outorder -redir:sim ./sim_dij -fetch:ifqsize 8 -decode:width 4 -issue:inorder false -issue:width 8 -commit:width 4 -ruu:size 16 -lsq:size 16 -res:imult 1 -res:ialu 5 -res:fpalu 1 -res:fpmult 1 -bpred:2lev 1 1024 8 0 -bpred:btb 256 2 -bpred:comb 1024 -fetch:mplat 15 -cache:dl1 dl1:32:64:2:l -cache:il1 il1:32:64:2:l -cache:dl2 ul2:512:64:16:l  dijkstra_small.ss input.dat et bf.ss input_small.asc
+```
+
+*Remarque* : les paramètres pour les prédicteurs de branchement sont ceux par défaut, à l'exception du premier paramètre pour le btb qui est indiqué dans le tableau
 
 Dans un premier temps listons les différents paramètres clefs ressortant des simulations sim-outorder. Les valeurs associées aux paramètres dans les tableaux suivants proviennent du profiling pour l'algorithme de dijkstra.
 
@@ -189,37 +214,56 @@ Voici maintenant quelques graphes montrant les différences de performances pour
 <div style="text-align:center;">
   <img src="plots/Triple_plot_branche_A7_dij.png" alt="Description of the image" style="width:75%;" />
 </div>
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+On constate que les différences de performance pour la prédiction de branche sont négligeables,de l'ordre de 0.2%, et ne sont pas visibles sur le plot. Cela est normal car les paramètres des prédicteurs sont les mêmes selon les différentes simulations de taille de cache. Il sera plus intéressant de comparer les performances entre les architectures de A7 et A15 car les prédicteurs ne sont pas les mêmes.
 
-### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
+### Diagramme en barres de 2 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
 <div style="text-align:center;">
   <img src="plots/Double_plot_perf_A7_dij.png" alt="Description of the image" style="width:50%;" />
 </div>
+Le nombre d'instructions par cycle augmente avec la taille du cache étant donné que l'on peut stocker plus d'instructions dans le cache d'instructions et l'on a moins souvent besoin de charger les données de la RAM dans le cache. On observe un comportement asymptotique parce que même si toutes les instructions et les données sont chargées dans le cache, le processeur doit prendre le temps de les exécuter. Pareillement, le nombre de cycles diminue car on exécute plus d'instructions par cycle.
 
-### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Dijsktra
+### Diagrammes indicateurs d'utilisation du cache **d'instructions** lors de l'exécution de Dijsktra
 <div style="text-align:center;">
   <img src="plots/Triple_plot_cache_A7_dij.png" alt="Description of the image" style="width:75%;" />
 </div><div style="text-align:center;">
   <img src="plots/Triple_plot_cache_A7_dij2.png" alt="Description of the image" style="width:75%;" />
 </div>
 
-### Même traitement opur l'algorithme de Blowfish
-<div style="text-align:center;">
-  <img src="plots/Triple_plot_branche_A7_blow.png" alt="Description of the image" style="width:75%;" />
-</div>
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
 
-### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+## Diagrammes indicateurs d'utilisation du cache **de données** lors de l'exécution de Dijsktra
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A7_dijdata.png" alt="Description of the image" style="width:75%;" />
+</div><div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A7_dijdata2.png" alt="Description of the image" style="width:75%;" />
+</div>
+Ci-dessus sont tracé en bleu les diagrammes relatifs au cache d'instructions et en orange ceux relatifs au cache de données.
+
+### Pour le cache d'instructions :
+On observe un saut à partir de 4KB. Nous avons du mal à l'expliquer car le nombre d'accès au cache d'instructions devrait rester identique pour la réalisation d'un même benchmark, car son nombre d'instructions doit rester identique. La fetchqueue a une taille de 4, ce qui signifie que les instructions sont chargées 4 par 4 dans le cache L1. L'on ne devrait pas observer un pallier, à la rigueur une descente plus lisse. On retrouve ce saut inexplicable pour d'autres indicateurs, la seule explication serait un changement de comportement du processeur à partir de 4KB (autre politique d'inclusion / exclusion ou préchargement du cache, peut être en lien avec la taille d'une apge mémoire linux qui est de 4KB).
+
+
+Les *misses* baissent avec l'augmentation de la taille du cache, ce qui est normal car si le cache est plus grand, les chances que les données soient présentes dans le cache sont plus grandes. On observe un profil quasi-identique entre misses et replacement puisque si l'on a cache-miss, les données doivent être renouvellées pour remplacer la ligne de cache actuelle par une ligne de cache stockée dans la RAM ce est un *replacement*. Le cache est de type *set-associative* avec une associativité de 2, donc on peut s'imaginer que si la donnée n'est pas présente sur la première ligne de cache du set, elle ne le sera probablement pas sur la deuxième ligne du cache du set. Cela conduit à un *replacement* pour un *miss*.
+
+On remarque que le nombre d'accès est égal au nombre de hits plus le nombre de misses. Cela signifie qu'un accès au cache est compté comme un hit si la donnée est trouvée dès le premier essai.
+
+Finalement on observe un nombre d'accès au cache L2 non-nul (environ 19 millions d'accès, d'après le fichier de simulation). Cela est dû au fait qu'il faut les données transitent de la RAM vers L2 et de L2 vers L1, et l'on observe pas de *writeback* car il n'y a aucun intérêt à reléguer une instruction pour un coeur dans un autre espace mémoire. La nullité des invalidations provient du fait que l'on ne simule qu'un seul coeur.
+
+### Interprétation des résultats pour le cache de données :
+
+Pour la même raison que précédemment le nombre d'accès au cache est constant. Le nombre de misses et le nombre de replacement diminuent pour les mêmes raisons. Le nombre de hits augmente et semble converger vers une limite. Le nombre de hits augmente avec la diminution du nombre de misses. Le nombre de writeback diminue quant à lui car la taille du cache augmentant, l'on a moins besoin de restocker des données à des niveaux de mémoire plus éloignés du coeur.
+
+
+### Diagramme en barres d'i'ndicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
 <div style="text-align:center;">
   <img src="plots/Double_plot_perf_A7_blow.png" alt="Description of the image" style="width:50%;" />
-</div>
-
-### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
-<div style="text-align:center;">
+</div><div style="text-align:center;">
   <img src="plots/Triple_plot_cache_A7_blow.png" alt="Description of the image" style="width:75%;" />
 </div><div style="text-align:center;">
   <img src="plots/Triple_plot_cache_A7_blow2.png" alt="Description of the image" style="width:75%;" />
 </div>
+Les remarques concernant blowfish sont les même que concernant Disjktra, on observe les mêmes évolutions. Pareillement, les lookups, updates et Addr Hits restent en nombre identique.
+
+
 ## Question 5 
 
 Contenu identique à la question précédents appliqué à un coeur A15
@@ -227,10 +271,7 @@ Contenu identique à la question précédents appliqué à un coeur A15
 Voici maintenant quelques graphes montrant les différences de performances pour différentes tailles de cache L1 :
 
 ### Diagramme en barres de 3 indicateurs de performance de prédiction de branche lors de l'exécution de l'algorithme de Djsktra
-<div style="text-align:center;">
-  <img src="plots/Triple_plot_branche_A15_dij.png" alt="Description of the image" style="width:75%;" />
-</div>
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
 
 ### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
 <div style="text-align:center;">
@@ -242,13 +283,14 @@ On constate que les différences de performance pour la prédiction de branche s
   <img src="plots/Triple_plot_cache_A15_dij.png" alt="Description of the image" style="width:75%;" />
 </div><div style="text-align:center;">
   <img src="plots/Triple_plot_cache_A15_dij2.png" alt="Description of the image" style="width:75%;" />
+</div><div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A15_dijdata.png" alt="Description of the image" style="width:75%;" />
+</div><div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A15_dijdata2.png" alt="Description of the image" style="width:75%;" />
 </div>
+Les indicateurs suivent les mêmes tendances que pour un processeur A7, mais l'on observe pas de zone de virage identique à ce que l'on avait auparavant.
 
-### Même traitement opur l'algorithme de Blowfish
-<div style="text-align:center;">
-  <img src="plots/Triple_plot_branche_A15_blow.png" alt="Description of the image" style="width:75%;" />
-</div>
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
 
 ### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
 <div style="text-align:center;">
@@ -260,6 +302,12 @@ On constate que les différences de performance pour la prédiction de branche s
   <img src="plots/Triple_plot_cache_A15_blow.png" alt="Description of the image" style="width:75%;" />
 </div><div style="text-align:center;">
   <img src="plots/Triple_plot_cache_A15_blow2.png" alt="Description of the image" style="width:75%;" />
+</div>
+
+
+### Comparaison des prédicteurs de branchement des processeurs A7 et A15
+<div style="text-align:center;">
+  <img src="plots/compHits.png" alt="Description of the image" style="width:75%;" />
 </div>## Question 6
 
 Dans le fichie cache.cfg initial, present dans le repertoire du cours, on a les informations par défaut suivantes : 

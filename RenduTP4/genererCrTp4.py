@@ -50,7 +50,7 @@ def str_integration_image(str_src, prc_largeur):
 
 
 def imprimer_plot(abscisses, liste_simulations, parametre, nom_fichier_sortie,
-                  titre_plot="un plot", axe_x="x axis", axe_y="y axis"):
+                  titre_plot="un plot", axe_x="x axis", axe_y="y axis", couleur="blue"):
 
     X_positions = range(len(abscisses))
     Y = []
@@ -61,7 +61,7 @@ def imprimer_plot(abscisses, liste_simulations, parametre, nom_fichier_sortie,
         else:
             y = int(y)
         Y.append(y)
-    plt.bar(X_positions, Y)
+    plt.bar(X_positions, Y, color=couleur)
     plt.xticks(X_positions, abscisses)
     plt.title(titre_plot)
     plt.xlabel(axe_x)
@@ -70,7 +70,7 @@ def imprimer_plot(abscisses, liste_simulations, parametre, nom_fichier_sortie,
 
 def imprimer_multi_plot(is_A7, liste_simulations, liste_parametres, nom_fichier_sortie,
                   titres_plot=["Fig 1", "Fig 2", "Fig 3"], axes_x=["x1", "x2", "x3"],
-                  axes_y=["y1", "y2", "y3"]):
+                  axes_y=["y1", "y2", "y3"], couleur="#87CEEB"):
     if(is_A7):
         X = [1,2,4,8,16]
     else:
@@ -86,9 +86,8 @@ def imprimer_multi_plot(is_A7, liste_simulations, liste_parametres, nom_fichier_
             else:
                 y = int(y)
             Y.append(y)
-        print(Y)
         plt.subplot(101 + 10*(len(liste_parametres)) + i)
-        plt.bar(X_positions, Y)
+        plt.bar(X_positions, Y, color=couleur)
         plt.xticks(X_positions, X)
         plt.title(titres_plot[i])
         plt.xlabel(axes_x[i])
@@ -247,7 +246,6 @@ contenu_rapport += """
 
 Comparons les résultats précédents avec 3 profilings supplémentaires : SSCA2-BCH, SHA-1 et le produit de polynômes.
 
-Voici les résultats pour le profiling de SSCA2-BCH :
 
 **Pour le benchmark SSCA2**
 
@@ -265,6 +263,7 @@ sim-profile -redir:sim ./profiling_SHA -iclass true -iprof true sha.ss input_sma
 
 `sim-profile -redir:sim ./profiling_POLY -iclass true -iprof true poly_mult.ss`
 
+Voici les résultats pour le profiling de SSCA2-BCH :
 """
 
 
@@ -312,6 +311,14 @@ def tableau_de_perfs2(str_profiling, tab_parametres):
 
 contenu_rapport += """
 ## Question 4 :
+
+### utilisation de sim-outorder : 
+
+```
+sim-outorder -redir:sim ./sim_dij -fetch:ifqsize 8 -decode:width 4 -issue:inorder false -issue:width 8 -commit:width 4 -ruu:size 16 -lsq:size 16 -res:imult 1 -res:ialu 5 -res:fpalu 1 -res:fpmult 1 -bpred:2lev 1 1024 8 0 -bpred:btb 256 2 -bpred:comb 1024 -fetch:mplat 15 -cache:dl1 dl1:32:64:2:l -cache:il1 il1:32:64:2:l -cache:dl2 ul2:512:64:16:l  dijkstra_small.ss input.dat et bf.ss input_small.asc
+```
+
+*Remarque* : les paramètres pour les prédicteurs de branchement sont ceux par défaut, à l'exception du premier paramètre pour le btb qui est indiqué dans le tableau
 
 Dans un premier temps listons les différents paramètres clefs ressortant des simulations sim-outorder. Les valeurs associées aux paramètres dans les tableaux suivants proviennent du profiling pour l'algorithme de dijkstra.
 
@@ -389,9 +396,9 @@ imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["lookups", "updates
 contenu_rapport += str_integration_image("Triple_plot_branche_A7_dij.png","75")
 
 contenu_rapport += """
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+On constate que les différences de performance pour la prédiction de branche sont négligeables,de l'ordre de 0.2%, et ne sont pas visibles sur le plot. Cela est normal car les paramètres des prédicteurs sont les mêmes selon les différentes simulations de taille de cache. Il sera plus intéressant de comparer les performances entre les architectures de A7 et A15 car les prédicteurs ne sont pas les mêmes.
 
-### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
+### Diagramme en barres de 2 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
 """
 
 titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
@@ -402,16 +409,49 @@ imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["sim_IPC", "sim_cyc
 contenu_rapport += str_integration_image("Double_plot_perf_A7_dij.png", "50")
 
 contenu_rapport += """
+Le nombre d'instructions par cycle augmente avec la taille du cache étant donné que l'on peut stocker plus d'instructions dans le cache d'instructions et l'on a moins souvent besoin de charger les données de la RAM dans le cache. On observe un comportement asymptotique parce que même si toutes les instructions et les données sont chargées dans le cache, le processeur doit prendre le temps de les exécuter. Pareillement, le nombre de cycles diminue car on exécute plus d'instructions par cycle.
 
-### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Dijsktra
+### Diagrammes indicateurs d'utilisation du cache **d'instructions** lors de l'exécution de Dijsktra
 """
 imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.accesses", "il1.hits", "il1.misses"], "Triple_plot_cache_A7_dij",
                     ["Accesses", "Hits", "Misses"], [""]*3, [""]*3)
 imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.replacements", "il1.writebacks", "il1.invalidations"], "Triple_plot_cache_A7_dij2",
-                    ["Replacements", "Writebackes", "Invalidations"], [""]*3, [""]*3)
+                    ["Replacements", "Writebacks", "Invalidations"], [""]*3, [""]*3)
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["dl1.accesses", "dl1.hits", "dl1.misses"], "Triple_plot_cache_A7_dijdata",
+                    ["Accesses", "Hits", "Misses"], [""]*3, [""]*3, couleur="orange")
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["dl1.replacements", "dl1.writebacks", "dl1.invalidations"], "Triple_plot_cache_A7_dijdata2",
+                    ["Replacements", "Writebacks", "Invalidations"], [""]*3, [""]*3, couleur="orange")
+
 
 contenu_rapport += str_integration_image("Triple_plot_cache_A7_dij.png", "75")
 contenu_rapport += str_integration_image("Triple_plot_cache_A7_dij2.png", "75")
+
+contenu_rapport += """
+
+
+## Diagrammes indicateurs d'utilisation du cache **de données** lors de l'exécution de Dijsktra
+"""
+
+contenu_rapport += str_integration_image("Triple_plot_cache_A7_dijdata.png", "75")
+contenu_rapport += str_integration_image("Triple_plot_cache_A7_dijdata2.png", "75")
+
+contenu_rapport += """
+Ci-dessus sont tracé en bleu les diagrammes relatifs au cache d'instructions et en orange ceux relatifs au cache de données.
+
+### Pour le cache d'instructions :
+On observe un saut à partir de 4KB. Nous avons du mal à l'expliquer car le nombre d'accès au cache d'instructions devrait rester identique pour la réalisation d'un même benchmark, car son nombre d'instructions doit rester identique. La fetchqueue a une taille de 4, ce qui signifie que les instructions sont chargées 4 par 4 dans le cache L1. L'on ne devrait pas observer un pallier, à la rigueur une descente plus lisse. On retrouve ce saut inexplicable pour d'autres indicateurs, la seule explication serait un changement de comportement du processeur à partir de 4KB (autre politique d'inclusion / exclusion ou préchargement du cache, peut être en lien avec la taille d'une apge mémoire linux qui est de 4KB).
+
+
+Les *misses* baissent avec l'augmentation de la taille du cache, ce qui est normal car si le cache est plus grand, les chances que les données soient présentes dans le cache sont plus grandes. On observe un profil quasi-identique entre misses et replacement puisque si l'on a cache-miss, les données doivent être renouvellées pour remplacer la ligne de cache actuelle par une ligne de cache stockée dans la RAM ce est un *replacement*. Le cache est de type *set-associative* avec une associativité de 2, donc on peut s'imaginer que si la donnée n'est pas présente sur la première ligne de cache du set, elle ne le sera probablement pas sur la deuxième ligne du cache du set. Cela conduit à un *replacement* pour un *miss*.
+
+On remarque que le nombre d'accès est égal au nombre de hits plus le nombre de misses. Cela signifie qu'un accès au cache est compté comme un hit si la donnée est trouvée dès le premier essai.
+
+Finalement on observe un nombre d'accès au cache L2 non-nul (environ 19 millions d'accès, d'après le fichier de simulation). Cela est dû au fait qu'il faut les données transitent de la RAM vers L2 et de L2 vers L1, et l'on observe pas de *writeback* car il n'y a aucun intérêt à reléguer une instruction pour un coeur dans un autre espace mémoire. La nullité des invalidations provient du fait que l'on ne simule qu'un seul coeur.
+
+### Interprétation des résultats pour le cache de données :
+
+Pour la même raison que précédemment le nombre d'accès au cache est constant. Le nombre de misses et le nombre de replacement diminuent pour les mêmes raisons. Le nombre de hits augmente et semble converger vers une limite. Le nombre de hits augmente avec la diminution du nombre de misses. Le nombre de writeback diminue quant à lui car la taille du cache augmentant, l'on a moins besoin de restocker des données à des niveaux de mémoire plus éloignés du coeur.
+"""
 
 liste_simulations_blowfish_A7 = []
 for L1_size in ["1", "2", "4", "8", "16"]:
@@ -421,20 +461,7 @@ for L1_size in ["1", "2", "4", "8", "16"]:
 
 contenu_rapport += """
 
-### Même traitement opur l'algorithme de Blowfish
-"""
-
-titles = ["Nombre Lookups", "Nombre Updates", "Nombre Addr Hits"]
-axesX = ["Taille cache L1 en KB"] * 3
-axesY = [""] * 3
-imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A7_blow", titres_plot=titles, axes_x=axesX, axes_y=axesY)
-
-contenu_rapport += str_integration_image("Triple_plot_branche_A7_blow.png","75")
-
-contenu_rapport += """
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
-
-### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+### Diagramme en barres d'i'ndicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
 """
 
 titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
@@ -444,10 +471,6 @@ imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["sim_IPC", "sim_cyc
 
 contenu_rapport += str_integration_image("Double_plot_perf_A7_blow.png", "50")
 
-contenu_rapport += """
-
-### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
-"""
 imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.accesses", "il1.hits", "il1.misses"], "Triple_plot_cache_A7_blow",
                     ["Accesses", "Hits", "Misses"], [""]*3, [""]*3)
 imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.replacements", "il1.writebacks", "il1.invalidations"], "Triple_plot_cache_A7_blow2",
@@ -455,6 +478,12 @@ imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.replacements", "il1.wr
 
 contenu_rapport += str_integration_image("Triple_plot_cache_A7_blow.png", "75")
 contenu_rapport += str_integration_image("Triple_plot_cache_A7_blow2.png", "75")
+
+
+contenu_rapport += """
+Les remarques concernant blowfish sont les même que concernant Disjktra, on observe les mêmes évolutions. Pareillement, les lookups, updates et Addr Hits restent en nombre identique.
+
+"""
 
 
 # --------------------------------------------------------------------------
@@ -479,15 +508,8 @@ Voici maintenant quelques graphes montrant les différences de performances pour
 ### Diagramme en barres de 3 indicateurs de performance de prédiction de branche lors de l'exécution de l'algorithme de Djsktra
 """
 
-titles = ["Nombre Lookups", "Nombre Updates", "Nombre Addr Hits"]
-axesX = ["Taille cache L1 en KB"] * 3
-axesY = [""] * 3
-imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A15, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A15_dij", titres_plot=titles, axes_x=axesX, axes_y=axesY)
-
-contenu_rapport += str_integration_image("Triple_plot_branche_A15_dij.png","75")
 
 contenu_rapport += """
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
 
 ### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
 """
@@ -508,8 +530,20 @@ imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.accesses", "il1.hits
 imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.replacements", "il1.writebacks", "il1.invalidations"], "Triple_plot_cache_A15_dij2",
                     ["Replacements", "Writebackes", "Invalidations"], [""]*3, [""]*3)
 
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["dl1.accesses", "dl1.hits", "dl1.misses"], "Triple_plot_cache_A15_dijdata",
+                    ["Accesses", "Hits", "Misses"], [""]*3, [""]*3, couleur="orange")
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["dl1.replacements", "dl1.writebacks", "dl1.invalidations"], "Triple_plot_cache_A15_dijdata2",
+                    ["Replacements", "Writebacks", "Invalidations"], [""]*3, [""]*3, couleur="orange")
+
 contenu_rapport += str_integration_image("Triple_plot_cache_A15_dij.png", "75")
 contenu_rapport += str_integration_image("Triple_plot_cache_A15_dij2.png", "75")
+
+contenu_rapport += str_integration_image("Triple_plot_cache_A15_dijdata.png", "75")
+contenu_rapport += str_integration_image("Triple_plot_cache_A15_dijdata2.png", "75")
+
+contenu_rapport += """
+Les indicateurs suivent les mêmes tendances que pour un processeur A7, mais l'on observe pas de zone de virage identique à ce que l'on avait auparavant.
+"""
 
 
 liste_simulations_blow_A15 = []
@@ -520,18 +554,6 @@ for L1_size in ["2", "4", "8", "16", "32"]:
 
 contenu_rapport += """
 
-### Même traitement opur l'algorithme de Blowfish
-"""
-
-titles = ["Nombre Lookups", "Nombre Updates", "Nombre Addr Hits"]
-axesX = ["Taille cache L1 en KB"] * 3
-axesY = [""] * 3
-imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A15, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A15_blow", titres_plot=titles, axes_x=axesX, axes_y=axesY)
-
-contenu_rapport += str_integration_image("Triple_plot_branche_A15_blow.png","75")
-
-contenu_rapport += """
-On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
 
 ### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
 """
@@ -553,7 +575,31 @@ imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.replacements", "il1.
                     ["Replacements", "Writebackes", "Invalidations"], [""]*3, [""]*3)
 
 contenu_rapport += str_integration_image("Triple_plot_cache_A15_blow.png", "75")
-contenu_rapport += str_integration_image("Triple_plot_cache_A15_blow2.png", "75")
+contenu_rapport += str_integration_image("Triple_plot_cache_A15_blow2.png", "75") + "\n\n"
+
+
+contenu_rapport += """
+### Comparaison des prédicteurs de branchement des processeurs A7 et A15
+"""
+
+Ltitres = ["Lookups","Update","Adress Hits"]
+
+plt.clf()
+plt.subplot(1,3,1)
+plt.bar(["A7 Lookup", "A15 Lookup"], [291646, 293161])
+
+
+plt.subplot(1,3,2)
+plt.bar(["A7 Updates", "A15 Updates"], [291109, 291109])
+
+plt.subplot(1,3,3)
+plt.bar(["A7 Address Hits", "A15 Address Hits"], [286740, 286740])
+plt.savefig("plots/compHits")
+
+contenu_rapport += str_integration_image("compHits.png", 75)
+contenu_rapport += """
+Il n'y a pas de différence notable entre les performances des prédicteurs de branchement des processeurs A7 et A15.
+"""
 
 # --------------------------------------------------------------------------
 
