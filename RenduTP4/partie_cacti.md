@@ -1,6 +1,6 @@
 ## Question 6
 
-Dans le fichie cache.cfg initial, present dans le repertoire du cours, on a les informations par défaut suivantes : 
+Dans le fichier cache.cfg initial, présent dans le repertoire du cours, on a les informations par défaut suivantes : 
 >-size (bytes) 524248       (ligne 10) 
 >-block size (bytes) 32     (ligne 17)
 >-associativity 8           (ligne 23)
@@ -8,14 +8,14 @@ Dans le fichie cache.cfg initial, present dans le repertoire du cours, on a les 
 
 ## Question 7
 
-On va adapté 4 fichier de configurations pour simuler respectivement les surfaces :
+On va adapter 4 fichiers de configurations pour simuler respectivement les surfaces :
 
 * d'un cache L1 du cortexA15 
 * d'un cache L1 du cortexA7
 * du cache L2 du cortexA15
 * du cache L2 du cortexA7
 
-en simulant ces différentes configuration avec cacti on a les résultats suivants (dans les fichiers A15L1outputs, A7L1outputs, A15L2outputs, A7L2outputs)
+en simulant ces différentes configurations avec cacti on a les résultats suivants (dans les fichiers A15L1outputs, A7L1outputs, A15L2outputs, A7L2outputs)
 
 |                             | **A15L1 outputs** | **A7L1 outputs** | **A15L2 outputs** | **A7L2 outputs** |
 |-----------------------------|-------------------|------------------|-------------------|------------------|
@@ -42,13 +42,13 @@ On constate que la surface des caches augmente avec la taille de cache. Cependan
   <img src="./plots_cacti/EvolutionSurfaceTotal.png" alt="Description of the image" style="width:50%;" />
 </div>
 
-Rq: pour avoir la surface totale on sait que dans la question precedente les surfaces totales était de 2mm2 et 0.45mm2 et on a calculé la surface des caches L1 donc on a la nouvelle surface totale avec : 
+Rq: pour avoir la surface totale on sait que dans la question précedente les surfaces totales étaient de 2mm² et 0.45mm² et on a calculé la surface des caches L1 donc on a la nouvelle surface totale avec : 
 $$NewTotalArea = PrevTotalArea - PrevL1Area + NewL1Area$$
 
 
 ## Question 9
 
-Il suffit de récupérer les lignes sim_IPC dans les simulation de dijkstra et de blowfish avec différentes tailles de cacheL1 et pour les deux cortex (cf Q4 et Q5) puis utiliser les surfaces notés dans le fichier python ```./cact-simulations/surface_par_taille.py```
+Il suffit de récupérer les lignes sim_IPC dans les simulations de dijkstra et de blowfish avec différentes tailles de cacheL1 et pour les deux cortex (cf Q4 et Q5) puis utiliser les surfaces notés dans le fichier python ```./cact-simulations/surface_par_taille.py```
 
 <div style="text-align:center;">
   <img src="./plots_cacti/perf_surfaciques.png" alt="IPC/surface" style="width:90%;" />
@@ -56,7 +56,7 @@ Il suffit de récupérer les lignes sim_IPC dans les simulation de dijkstra et d
 
 ## Question 10
 
-Il suffit de multiplier la fréquence (maximale) par la puissance consommé par MHz : 
+Il suffit de multiplier la fréquence (maximale) par la puissance consommée par MHz : 
 
 $ PuissanceA7 = 1000 [MHz]  *  0.10 [mW/MHz] = 100 mW $
 $ PuissanceA15 = 2500 [MHz]  *  0.20 [mW/MHz] = 500 mW $
@@ -64,8 +64,8 @@ $ PuissanceA15 = 2500 [MHz]  *  0.20 [mW/MHz] = 500 mW $
 
 ## Question 11
 
-On procède comme à la question 9, en récupérant les données de consommation d'énergie dans les output données par cacti avec les caches L1 des deux processeurs.
-Pour récupérer la consommation de puissance on somme les différents champs (modulo conversion) : 
+On procède comme à la question 9, en récupérant les données de consommation d'énergie dans les outputs données par cacti avec les caches L1 des deux processeurs.
+Pour récupérer la consommation de puissance on somme les différents champs : 
 
 >Leakage Power Closed Page (mW):
 >Leakage Power Open Page (mW): 
@@ -74,7 +74,7 @@ Pour récupérer la consommation de puissance on somme les différents champs (m
 >(in Data array) __ Total leakage read/write power of a bank (mW):
 >(in Tag array) __ Total leakage read/write power of a bank (mW):
 
-On récupère ces données de puissances dans et on les somme avec le script ```recupPowerData.py```. Remarque : on a pas pris en compte les benchmark mais seulement les configuration de cache pour simuler la consommation de puissance, en réalité le benchmark a surement un impacte sur ces valeurs.
+On récupère ces données de puissances dans les outputs cacti (fichier A7-0.txt... A7-6.txt, A15-1.txt...A15-6.txt) et on les somme avec le script ```recupPowerData.py```. Remarque : on a pas pris en compte les benchmark mais seulement les configuration de cache pour simuler la consommation de puissance, en réalité le benchmark a surement un impacte sur ces valeurs.
 
 On obtiens pour la configuration du A7 et celle du A15 respectivement les consommations 4.453 mW et 3.4569880504 mW.
 
@@ -95,6 +95,6 @@ Dans tous les cas, il est intéressant de choisir un cache L1 de 4 kB car cette 
 
 Cette taille de cache L1 étant choisie, on gagne beaucoup en efficacité énergétique en choisissant le A15 (x5 par rapport au A7), alors que l'efficacité surfacique n'est moins bonne que d'un facteur 2.
 
-D'un point de vue objectif, il serait raisonnable de choisir le A15 avec un cache L1 de 4kB. Cependant du point de vue du constructeur, les coûts engendrés par une surface plus importante sont extrêmement importants c'est pourquoi je ne suis pas sûre que le choix précédent soit le plus judicieux.
+D'un point de vue objectif, il serait raisonnable de choisir le A15 avec un cache L1 de 4kB. Cependant du point de vue du constructeur, les coûts engendrés par une surface plus importante sont extrêmement importants c'est pourquoi nous ne sommes pas sûre que le choix précédent soit nécessairement le plus judicieux.
 
 
