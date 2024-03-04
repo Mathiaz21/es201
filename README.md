@@ -287,6 +287,5 @@ On utilise les IPC de la question 9 et en divisant par les consommations on obti
 ![./cacti-simulations/efficacite_energetique.png](./cacti-simulations/efficacite_energetique.png)
 
 
-
 ## Question 12
 

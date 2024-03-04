@@ -1,3 +1,4 @@
+# coding=utf-8
 import re
 
 def extract_power_values(file_path):
@@ -36,13 +37,19 @@ def sum_power_values(power_values):
     return total_power
 
 
-# Utilisation du script
-file_path = "A7L1output.txt"
-power_values = extract_power_values(file_path)
-print(power_values)
-print(sum_power_values(power_values))
+# Utilisation du script sur les outputs avec cacti pour différente valeurs de cache L1:
 
-file_path = "A15L1output.txt"
-power_values = extract_power_values(file_path)
-print(power_values)
-print(sum_power_values(power_values))
+print("_________________")
+
+#outputs avec config A7
+for i in range(6):
+    file_path = "A7-"+str(i)+".txt"
+    power_values = extract_power_values(file_path)
+    print("A7 --- taille cache L1 :", 2**i ,"kB - puissance consommee :",sum_power_values(power_values),"mW")
+
+print("_________________")
+#outputs avec config A15 -- on a pas d'output pour une taille de 1 kB
+for i in range(2,7):
+    file_path = "A15-"+str(i)+".txt"
+    power_values = extract_power_values(file_path)
+    print("A7 --- taille cache L1 :", 2**(i-1) ,"kB - puissance consommee :",sum_power_values(power_values),"mW")
