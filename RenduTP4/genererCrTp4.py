@@ -24,7 +24,7 @@ def findBlowfishPdf(nomParametre, str_profiling):
         return match.group(1)
     else: 
         print("No correlation !")
-        return match
+        return None
 
 def tableauDePerfs(str_profiling):
     result_str = """
