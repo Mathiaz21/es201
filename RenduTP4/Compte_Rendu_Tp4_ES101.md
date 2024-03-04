@@ -1,11 +1,49 @@
 
 # Compte Rendu TP4 ES201
-## Jean Acker ; Alexandre Drean ; Mathias Gilbert ; Édouard Clocheret
+## Jean Acker ; Alexandre Drean ; Mathias Gilbert ; Edouard Clocheret
 
 
 ## Question 1 :
 
-Commençons par traiter le cas du Blowfish :
+### Pour le benchmark Blowfish
+
+**pour lancer le profiling**
+
+```
+sim-profile -redir:sim ./profiling -iclass true -iprof true bf.ss e input_small.asc output.enc 123456789abcdeffedcba0987654321
+```
+les résultats sont chargés dans le fichier profiling, les lignes qui nous intéressent sont les suivantes:
+
+
+>sim_inst_class_prof.start_dist
+>load                 535756  21.32 
+>store                179590   7.15 
+>uncond branch         69208   2.75 
+>cond branch          221901   8.83 
+>int computation     1506430  59.95 
+>fp computation            0   0.00 
+>trap                     23   0.00 
+>sim_inst_class_prof.end_dist
+
+(compris entre les lignes 61 et 69)
+
+Et les lignes 136 à 145 qui correspondent aux additions, soustraction, multiplication et division. à chaque fois on regarde la dernière colonne qui correspond à la proportion de ce type d'instruction. Parmi les lignes 136 à 145, on retrouve :
+ - add, addi, addu, addiu qui sont juste des additions, la différence entre ces 4 opérations, c'est le types des arguments, par exemple addu prend des entiers unsigned
+ enfait,ce qui nous interesse, c'est la proportion des additions (lignes 136 à 139), la proporiton des soustraction (140 et 141)...
+
+ C'est important parceque on peut spécifier le nombre de multiplieurs/diviseurs entiers et flottant du processeur qu'on construit. Historiquement, les ALUs ne pouvaient faire que des  additions et soustractions, et il peut y avoir des unité spécialisé pour la division et la multipication.
+ 
+
+**détaille des classes d'instruction**
+
+- load : le nombre de chargement depuis la mémoire
+- store : le nombre de chargement dans la mémoire
+- uncond branch : le nombre de jump dans les instructions
+- cond branch : le nombre de branchement conditionel
+- int computation : le nombre de calcul en nombre entier
+- fp computation : le nombre de calcul en nombre flottant
+- trap : un trap c'est un interruption, typiquement quand il y a une erreur, une division par zéro, un *interrupt handler* s'occupent de ce genre d'événement
+
 Tableau retraçant l'utilisation des différentes opérations : 
 
 
@@ -31,10 +69,20 @@ Tableau retraçant l'utilisation des différentes opérations :
 | multu | 0.00 |
 | div | 0.00 |
 | divu | 0.00 |
-
+<div style="text-align:center;">
+  <img src="plots/plot_operations.png" alt="Description of the image" style="width:35%;" />
+</div>
 On remarque que les opérations les plus fréquemment appelées sont les additions d'entiers non signés. Les autres opérations ne sont, hormis la soustraction d'entiers non-signés "subu" qui est appelée un nombre de fois négligeable, même pas appelées du tout.
 
 Maintenant voyons quels résulats l'on obtient avec le profiling avec l'algorithme de Dijkstra :
+
+### Pour le benchmark dijkstra
+
+**Pour lancer le profiling**
+
+```
+sim-profile -redir:sim ./profiling_dij -iclass true -iprof true dijkstra_small.ss input.dat et bf.ss input_small.asc
+```
 
 | Opération | Pourcentage d'utilisation |
 |:----------|:-------------------------:|
@@ -138,7 +186,72 @@ On constate que les différences de performance pour la prédiction de branche s
 <div style="text-align:center;">
   <img src="plots/Double_plot_perf_A7_dij.png" alt="Description of the image" style="width:50%;" />
 </div>
-## Question 6
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Dijsktra
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A7_dij.png" alt="Description of the image" style="width:75%;" />
+</div><div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A7_dij2.png" alt="Description of the image" style="width:75%;" />
+</div>
+
+### Même traitement opur l'algorithme de Blowfish
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_branche_A7_blow.png" alt="Description of the image" style="width:75%;" />
+</div>
+On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
+### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+<div style="text-align:center;">
+  <img src="plots/Double_plot_perf_A7_blow.png" alt="Description of the image" style="width:50%;" />
+</div>
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A7_blow.png" alt="Description of the image" style="width:75%;" />
+</div><div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A7_blow2.png" alt="Description of the image" style="width:75%;" />
+</div>
+## Question 5 
+
+Contenu identique à la question précédents appliqué à un coeur A15
+
+Voici maintenant quelques graphes montrant les différences de performances pour différentes tailles de cache L1 :
+
+### Diagramme en barres de 3 indicateurs de performance de prédiction de branche lors de l'exécution de l'algorithme de Djsktra
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_branche_A15_dij.png" alt="Description of the image" style="width:75%;" />
+</div>
+On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
+### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
+<div style="text-align:center;">
+  <img src="plots/Double_plot_perf_A15_dij.png" alt="Description of the image" style="width:50%;" />
+</div>
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Dijsktra
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A15_dij.png" alt="Description of the image" style="width:75%;" />
+</div><div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A15_dij2.png" alt="Description of the image" style="width:75%;" />
+</div>
+
+### Même traitement opur l'algorithme de Blowfish
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_branche_A15_blow.png" alt="Description of the image" style="width:75%;" />
+</div>
+On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
+### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+<div style="text-align:center;">
+  <img src="plots/Double_plot_perf_A15_blow.png" alt="Description of the image" style="width:50%;" />
+</div>
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
+<div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A15_blow.png" alt="Description of the image" style="width:75%;" />
+</div><div style="text-align:center;">
+  <img src="plots/Triple_plot_cache_A15_blow2.png" alt="Description of the image" style="width:75%;" />
+</div>## Question 6
 
 Dans le fichie cache.cfg initial, present dans le repertoire du cours, on a les informations par défaut suivantes : 
 >-size (bytes) 524248       (ligne 10) 

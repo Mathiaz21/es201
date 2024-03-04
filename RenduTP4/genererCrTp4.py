@@ -183,6 +183,13 @@ contenu_rapport += tableauDePerfs(str_profiling_blowfish, liste_operations_basic
 contenu_rapport += tableauDePerfs(str_profiling_blowfish, liste_detail_calcul)
 
 abscisse_values = [d[1] for d in liste_detail_calcul]
+ordonnee_values = [ findBlowfishPdf(d[0], str_profiling_blowfish) for d in liste_detail_calcul]
+nomplot = "plot_operations.png"
+plt.bar(abscisse_values, ordonnee_values)
+plt.title("Utilisation relative des opérations")
+plt.savefig("plots/"+nomplot)
+
+contenu_rapport += str_integration_image(nomplot, 35)
 
 contenu_rapport += """
 On remarque que les opérations les plus fréquemment appelées sont les additions d'entiers non signés. Les autres opérations ne sont, hormis la soustraction d'entiers non-signés "subu" qui est appelée un nombre de fois négligeable, même pas appelées du tout.
@@ -226,6 +233,8 @@ Dans le cas de blowfish, les instructions majoritaires sont les écritures mémo
 f = open("simulations/profiling_dij_ssca2v2", "r")
 str_profiling_SSCA2 = f.read()
 f.close()
+
+# Mettre ici la simulation du SHA
 
 f = open("simulations/profiling_POLY", "r")
 str_profiling_poly = f.read()
@@ -333,6 +342,8 @@ tab_L1 = [
     ["il1.invalidations", "Quand une ligne de cache n'est plus valide, typiquement dans des cas multi-cœurs (ce qui n'est pas le cas ici), où la donnée est mise à jour dans le cache d'un autre cœur"]
 ]
 
+
+
 contenu_rapport += tableau_de_perfs2(str_sim_outorder, tab_L1)
 
 liste_simulations_dij_A7 = []
@@ -367,6 +378,17 @@ imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["sim_IPC", "sim_cyc
 
 contenu_rapport += str_integration_image("Double_plot_perf_A7_dij.png", "50")
 
+contenu_rapport += """
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Dijsktra
+"""
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.accesses", "il1.hits", "il1.misses"], "Triple_plot_cache_A7_dij",
+                    ["Accesses", "Hits", "Misses"], [""]*3, [""]*3)
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.replacements", "il1.writebacks", "il1.invalidations"], "Triple_plot_cache_A7_dij2",
+                    ["Replacements", "Writebackes", "Invalidations"], [""]*3, [""]*3)
+
+contenu_rapport += str_integration_image("Triple_plot_cache_A7_dij.png", "75")
+contenu_rapport += str_integration_image("Triple_plot_cache_A7_dij2.png", "75")
 
 liste_simulations_blowfish_A7 = []
 for L1_size in ["1", "2", "4", "8", "16"]:
@@ -375,7 +397,42 @@ for L1_size in ["1", "2", "4", "8", "16"]:
     f.close
 
 contenu_rapport += """
+
+### Même traitement opur l'algorithme de Blowfish
 """
+
+titles = ["Nombre Lookups", "Nombre Updates", "Nombre Addr Hits"]
+axesX = ["Taille cache L1 en KB"] * 3
+axesY = [""] * 3
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A7_blow", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+
+contenu_rapport += str_integration_image("Triple_plot_branche_A7_blow.png","75")
+
+contenu_rapport += """
+On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
+### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+"""
+
+titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
+axesX = ["Taille cache L1 en KB"] * 3
+axesY = [""] * 3
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["sim_IPC", "sim_cycle"], "Double_plot_perf_A7_blow", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+
+contenu_rapport += str_integration_image("Double_plot_perf_A7_blow.png", "50")
+
+contenu_rapport += """
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
+"""
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.accesses", "il1.hits", "il1.misses"], "Triple_plot_cache_A7_blow",
+                    ["Accesses", "Hits", "Misses"], [""]*3, [""]*3)
+imprimer_multi_plot(True, liste_simulations_dij_A7, ["il1.replacements", "il1.writebacks", "il1.invalidations"], "Triple_plot_cache_A7_blow2",
+                    ["Replacements", "Writebackes", "Invalidations"], [""]*3, [""]*3)
+
+contenu_rapport += str_integration_image("Triple_plot_cache_A7_blow.png", "75")
+contenu_rapport += str_integration_image("Triple_plot_cache_A7_blow2.png", "75")
+
 
 # --------------------------------------------------------------------------
 
@@ -389,11 +446,91 @@ for L1_size in ["2", "4", "8", "16", "32"]:
     liste_simulations_dij_A15.append(f.read())
     f.close
 
+contenu_rapport += """
+## Question 5 
+
+Contenu identique à la question précédents appliqué à un coeur A15
+
+Voici maintenant quelques graphes montrant les différences de performances pour différentes tailles de cache L1 :
+
+### Diagramme en barres de 3 indicateurs de performance de prédiction de branche lors de l'exécution de l'algorithme de Djsktra
+"""
+
+titles = ["Nombre Lookups", "Nombre Updates", "Nombre Addr Hits"]
+axesX = ["Taille cache L1 en KB"] * 3
+axesY = [""] * 3
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A15, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A15_dij", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+
+contenu_rapport += str_integration_image("Triple_plot_branche_A15_dij.png","75")
+
+contenu_rapport += """
+On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
+### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
+"""
+
+titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
+axesX = ["Taille cache L1 en KB"] * 3
+axesY = [""] * 3
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A15, ["sim_IPC", "sim_cycle"], "Double_plot_perf_A15_dij", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+
+contenu_rapport += str_integration_image("Double_plot_perf_A15_dij.png", "50")
+
+contenu_rapport += """
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Dijsktra
+"""
+imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.accesses", "il1.hits", "il1.misses"], "Triple_plot_cache_A15_dij",
+                    ["Accesses", "Hits", "Misses"], [""]*3, [""]*3)
+imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.replacements", "il1.writebacks", "il1.invalidations"], "Triple_plot_cache_A15_dij2",
+                    ["Replacements", "Writebackes", "Invalidations"], [""]*3, [""]*3)
+
+contenu_rapport += str_integration_image("Triple_plot_cache_A15_dij.png", "75")
+contenu_rapport += str_integration_image("Triple_plot_cache_A15_dij2.png", "75")
+
+
 liste_simulations_blow_A15 = []
 for L1_size in ["2", "4", "8", "16", "32"]:
     f = open("simulations/sim_blow_A15_" + L1_size, "r")
     liste_simulations_blow_A15.append(f.read())
     f.close
+
+contenu_rapport += """
+
+### Même traitement opur l'algorithme de Blowfish
+"""
+
+titles = ["Nombre Lookups", "Nombre Updates", "Nombre Addr Hits"]
+axesX = ["Taille cache L1 en KB"] * 3
+axesY = [""] * 3
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A15, ["lookups", "updates", "addr_hits"], "Triple_plot_branche_A15_blow", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+
+contenu_rapport += str_integration_image("Triple_plot_branche_A15_blow.png","75")
+
+contenu_rapport += """
+On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
+
+### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+"""
+
+titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
+axesX = ["Taille cache L1 en KB"] * 3
+axesY = [""] * 3
+imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A15, ["sim_IPC", "sim_cycle"], "Double_plot_perf_A15_blow", titres_plot=titles, axes_x=axesX, axes_y=axesY)
+
+contenu_rapport += str_integration_image("Double_plot_perf_A15_blow.png", "50")
+
+contenu_rapport += """
+
+### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
+"""
+imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.accesses", "il1.hits", "il1.misses"], "Triple_plot_cache_A15_blow",
+                    ["Accesses", "Hits", "Misses"], [""]*3, [""]*3)
+imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.replacements", "il1.writebacks", "il1.invalidations"], "Triple_plot_cache_A15_blow2",
+                    ["Replacements", "Writebackes", "Invalidations"], [""]*3, [""]*3)
+
+contenu_rapport += str_integration_image("Triple_plot_cache_A15_blow.png", "75")
+contenu_rapport += str_integration_image("Triple_plot_cache_A15_blow2.png", "75")
 
 # --------------------------------------------------------------------------
 
