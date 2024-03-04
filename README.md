@@ -289,8 +289,6 @@ On utilise les IPC de la question 9 et en divisant par les consommations on obti
 
 ## Question 12
 
-##Question 12
-
 On va se baser sur les graphiques d'efficacité surfacique (question 9) et d'efficacité énergétique (question 11).
 
 On constate que l'efficacité energétique avec A15 est systématiquement meilleur qu'avec A7, (environ 2 fois meilleur sauf pour une taille de L1 de 4 kB où il y'a un facteur 5).
