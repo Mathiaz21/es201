@@ -106,13 +106,52 @@ def imprimer_multi_plot(is_A7, liste_simulations, liste_parametres, nom_fichier_
 
 contenu_rapport = """
 # Compte Rendu TP4 ES201
-## Jean Acker ; Alexandre Drean ; Mathias Gilbert ; Édouard Clocheret
+## Jean Acker ; Alexandre Drean ; Mathias Gilbert ; Edouard Clocheret
 
 
 ## Question 1 :
 
-Commençons par traiter le cas du Blowfish :
-Tableau retraçant l'utilisation des différentes opérations : \n
+### Pour le benchmark Blowfish
+
+**pour lancer le profiling**
+
+```
+sim-profile -redir:sim ./profiling -iclass true -iprof true bf.ss e input_small.asc output.enc 123456789abcdeffedcba0987654321
+```
+les résultats sont chargés dans le fichier profiling, les lignes qui nous intéressent sont les suivantes:
+
+
+>sim_inst_class_prof.start_dist
+>load                 535756  21.32 
+>store                179590   7.15 
+>uncond branch         69208   2.75 
+>cond branch          221901   8.83 
+>int computation     1506430  59.95 
+>fp computation            0   0.00 
+>trap                     23   0.00 
+>sim_inst_class_prof.end_dist
+
+(compris entre les lignes 61 et 69)
+
+Et les lignes 136 à 145 qui correspondent aux additions, soustraction, multiplication et division. à chaque fois on regarde la dernière colonne qui correspond à la proportion de ce type d'instruction. Parmi les lignes 136 à 145, on retrouve :
+ - add, addi, addu, addiu qui sont juste des additions, la différence entre ces 4 opérations, c'est le types des arguments, par exemple addu prend des entiers unsigned
+ enfait,ce qui nous interesse, c'est la proportion des additions (lignes 136 à 139), la proporiton des soustraction (140 et 141)...
+
+ C'est important parceque on peut spécifier le nombre de multiplieurs/diviseurs entiers et flottant du processeur qu'on construit. Historiquement, les ALUs ne pouvaient faire que des  additions et soustractions, et il peut y avoir des unité spécialisé pour la division et la multipication.
+ 
+
+**détaille des classes d'instruction**
+
+- load : le nombre de chargement depuis la mémoire
+- store : le nombre de chargement dans la mémoire
+- uncond branch : le nombre de jump dans les instructions
+- cond branch : le nombre de branchement conditionel
+- int computation : le nombre de calcul en nombre entier
+- fp computation : le nombre de calcul en nombre flottant
+- trap : un trap c'est un interruption, typiquement quand il y a une erreur, une division par zéro, un *interrupt handler* s'occupent de ce genre d'événement
+
+Tableau retraçant l'utilisation des différentes opérations : 
+
 """
 
 
@@ -150,6 +189,14 @@ contenu_rapport += """
 On remarque que les opérations les plus fréquemment appelées sont les additions d'entiers non signés. Les autres opérations ne sont, hormis la soustraction d'entiers non-signés "subu" qui est appelée un nombre de fois négligeable, même pas appelées du tout.
 
 Maintenant voyons quels résulats l'on obtient avec le profiling avec l'algorithme de Dijkstra :
+
+### Pour le benchmark dijkstra
+
+**Pour lancer le profiling**
+
+```
+sim-profile -redir:sim ./profiling_dij -iclass true -iprof true dijkstra_small.ss input.dat et bf.ss input_small.asc
+```
 """
 
 contenu_rapport += tableauDePerfs(str_profiling_dij, liste_operations_basic)
