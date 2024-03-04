@@ -144,7 +144,6 @@ contenu_rapport += tableauDePerfs(str_profiling_blowfish, liste_operations_basic
 contenu_rapport += tableauDePerfs(str_profiling_blowfish, liste_detail_calcul)
 
 abscisse_values = [d[1] for d in liste_detail_calcul]
-imprimer_multi_plot(abscisse_values, )
 
 contenu_rapport += """
 On remarque que les opérations les plus fréquemment appelées sont les additions d'entiers non signés. Les autres opérations ne sont, hormis la soustraction d'entiers non-signés "subu" qui est appelée un nombre de fois négligeable, même pas appelées du tout.
