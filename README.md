@@ -256,3 +256,5 @@ $$NewTotalArea = PrevTotalArea - PrevL1Area + NewL1Area$$
 ## Question 9
 
 Il suffit de récupérer les lignes sim_IPC dans les simulation de dijkstra et de blowfish avec différentes tailles de cacheL1 et pour les deux cortex (cf Q4 et Q5) puis utiliser les surfaces notés dans le fichier python ```./cact-simulations/surface_par_taille.py```
+
+![./cacti-simulations/perf_surfaciques.png](./cacti-simulations/perf_surfaciques.png)
