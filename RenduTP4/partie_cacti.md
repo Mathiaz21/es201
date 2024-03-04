@@ -51,7 +51,7 @@ $$NewTotalArea = PrevTotalArea - PrevL1Area + NewL1Area$$
 Il suffit de récupérer les lignes sim_IPC dans les simulation de dijkstra et de blowfish avec différentes tailles de cacheL1 et pour les deux cortex (cf Q4 et Q5) puis utiliser les surfaces notés dans le fichier python ```./cact-simulations/surface_par_taille.py```
 
 <div style="text-align:center;">
-  <img src="./plots_cacti/perf_surfaciques.png" alt="IPC/surface" style="width:50%;" />
+  <img src="./plots_cacti/perf_surfaciques.png" alt="IPC/surface" style="width:90%;" />
 </div>
 
 ## Question 10
@@ -80,5 +80,21 @@ On obtiens pour la configuration du A7 et celle du A15 respectivement les consom
 
 On utilise les IPC de la question 9 et en divisant par les consommations on obtient le graphique suivant :
 <div style="text-align:center;">
-  <img src="./plots_cacti/efficacite_energetique.png" alt="IPC/conso_puissance" style="width:50%;" />
+  <img src="./plots_cacti/efficacite_energetique.png" alt="IPC/conso_puissance" style="width:90%;" />
 </div>
+
+
+##Question 12
+
+On va se baser sur les graphiques d'efficacité surfacique (question 9) et d'efficacité énergétique (question 11).
+
+On constate que l'efficacité energétique avec A15 est systématiquement meilleur qu'avec A7, (environ 2 fois meilleur sauf pour une taille de L1 de 4 kB où il y'a un facteur 5).
+Mais que l'efficacité surfacique avec A7 est systématiquement meilleur qu'avec A15  (environ 2 fois meilleur également sauf pour une taille de 32 kB avec blowfish ou l'écart devient plus négligeable).
+
+Dans tous les cas, il est intéressant de choisir un cache L1 de 4 kB car cette taille maximize l'efficacité energétique.
+
+Cette taille de cache L1 étant choisie, on gagne beaucoup en efficacité énergétique en choisissant le A15 (x5 par rapport au A7), alors que l'efficacité surfacique n'est moins bonne que d'un facteur 2.
+
+D'un point de vue objectif, il serait raisonnable de choisir le A15 avec un cache L1 de 4kB. Cependant du point de vue du constructeur, les coûts engendrés par une surface plus importante sont extrêmement importants c'est pourquoi je ne suis pas sûre que le choix précédent soit le plus judicieux.
+
+
