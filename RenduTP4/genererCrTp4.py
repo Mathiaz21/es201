@@ -234,7 +234,9 @@ f = open("simulations/profiling_dij_ssca2v2", "r")
 str_profiling_SSCA2 = f.read()
 f.close()
 
-# Mettre ici la simulation du SHA
+f = open("simulation/profiling_SHA", "r")
+str_profiling_SHA = f.read()
+f.close()
 
 f = open("simulations/profiling_POLY", "r")
 str_profiling_poly = f.read()
