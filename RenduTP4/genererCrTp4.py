@@ -337,7 +337,7 @@ for L1_size in ["2", "4", "8", "16", "32"]:
 
 # --------------------------------------------------------------------------
 
-f = open("plots_cacti/partie_cacti.md")
+f = open("partie_cacti.md")
 str_partie_cacti = f.read()
 f.close()
 
