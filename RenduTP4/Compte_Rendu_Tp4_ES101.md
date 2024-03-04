@@ -117,8 +117,17 @@ Voici les résultats pour le profiling de SSCA2-BCH :
 | fp computation | 0.00 |
 | trap | 0.00 |
 
-Voici les résultats du profiling pour SHA-1 
- (Echec de ma part de les faire marcher)
+Voici les résultats du profiling pour SHA-1
+| Opération | Pourcentage d'utilisation |
+|:----------|:-------------------------:|
+| load | 16.72 |
+| store | 8.12 |
+| uncond branch | 0.08 |
+| cond branch | 6.10 |
+| int computation | 68.99 |
+| fp computation | 0.00 |
+| trap | 0.00 |
+
 Voici les résultats du profiling pour le produit de pôlynomes :
 
 | Opération | Pourcentage d'utilisation |

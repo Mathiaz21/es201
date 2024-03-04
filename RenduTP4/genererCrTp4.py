@@ -234,7 +234,9 @@ f = open("simulations/profiling_dij_ssca2v2", "r")
 str_profiling_SSCA2 = f.read()
 f.close()
 
-# Mettre ici la simulation du SHA
+f = open("simulations/profiling_SHA", "r")
+str_profiling_SHA = f.read()
+f.close()
 
 f = open("simulations/profiling_POLY", "r")
 str_profiling_poly = f.read()
@@ -246,11 +248,32 @@ contenu_rapport += """
 Comparons les résultats précédents avec 3 profilings supplémentaires : SSCA2-BCH, SHA-1 et le produit de polynômes.
 
 Voici les résultats pour le profiling de SSCA2-BCH :
+
+**Pour le benchmark SSCA2**
+
+```
+sim-profile -redir:sim ./profiling_SSCA -iclass true -iprof true SSCA2.ss input_small.asc
+```
+
+**Pour le benchmark SHA**
+
+```
+sim-profile -redir:sim ./profiling_SHA -iclass true -iprof true sha.ss input_small.asc
+```
+
+**Pour le produit de polynôme**
+
+`sim-profile -redir:sim ./profiling_POLY -iclass true -iprof true poly_mult.ss`
+
 """
+
+
 
 contenu_rapport += tableauDePerfs(str_profiling_SSCA2, liste_operations_basic)
 
-contenu_rapport += "\nVoici les résultats du profiling pour SHA-1 \n (Echec de ma part de les faire marcher)"
+contenu_rapport += "\nVoici les résultats du profiling pour SHA-1"
+
+contenu_rapport += tableauDePerfs(str_profiling_SHA, liste_operations_basic)
 
 contenu_rapport += "\nVoici les résultats du profiling pour le produit de pôlynomes :\n"
 
