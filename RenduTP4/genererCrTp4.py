@@ -112,12 +112,12 @@ contenu_rapport = """
 
 ### Pour le benchmark Blowfish
 
-**pour lancer le profiling**
+**Pour lancer le profiling**
 
 ```
 sim-profile -redir:sim ./profiling -iclass true -iprof true bf.ss e input_small.asc output.enc 123456789abcdeffedcba0987654321
 ```
-les résultats sont chargés dans le fichier profiling, les lignes qui nous intéressent sont les suivantes:
+Les résultats sont chargés dans le fichier profiling, les lignes qui nous intéressent sont les suivantes:
 
 
 >sim_inst_class_prof.start_dist
@@ -132,22 +132,22 @@ les résultats sont chargés dans le fichier profiling, les lignes qui nous int�
 
 (compris entre les lignes 61 et 69)
 
-Et les lignes 136 à 145 qui correspondent aux additions, soustraction, multiplication et division. à chaque fois on regarde la dernière colonne qui correspond à la proportion de ce type d'instruction. Parmi les lignes 136 à 145, on retrouve :
+Et les lignes 136 à 145 qui correspondent aux additions, soustraction, multiplication et division. À chaque fois on regarde la dernière colonne qui correspond à la proportion de ce type d'instruction. Parmi les lignes 136 à 145, on retrouve :
  - add, addi, addu, addiu qui sont juste des additions, la différence entre ces 4 opérations, c'est le types des arguments, par exemple addu prend des entiers unsigned
  enfait,ce qui nous interesse, c'est la proportion des additions (lignes 136 à 139), la proporiton des soustraction (140 et 141)...
 
- C'est important parceque on peut spécifier le nombre de multiplieurs/diviseurs entiers et flottant du processeur qu'on construit. Historiquement, les ALUs ne pouvaient faire que des  additions et soustractions, et il peut y avoir des unité spécialisé pour la division et la multipication.
+ C'est important parce que l'on peut spécifier le nombre de multiplieurs/diviseurs entiers et flottant du processeur qu'on construit. Historiquement, les ALUs ne pouvaient faire que des  additions et soustractions, et il peut y avoir des unités spécialisées pour la division et la multipication.
  
 
-**détaille des classes d'instruction**
+**détail des classes d'instruction**
 
-- load : le nombre de chargement depuis la mémoire
-- store : le nombre de chargement dans la mémoire
+- load : le nombre de chargements depuis la mémoire
+- store : le nombre de chargements dans la mémoire
 - uncond branch : le nombre de jump dans les instructions
-- cond branch : le nombre de branchement conditionel
-- int computation : le nombre de calcul en nombre entier
-- fp computation : le nombre de calcul en nombre flottant
-- trap : un trap c'est un interruption, typiquement quand il y a une erreur, une division par zéro, un *interrupt handler* s'occupent de ce genre d'événement
+- cond branch : le nombre de branchements conditionels
+- int computation : le nombre de calculs en nombre entier
+- fp computation : le nombre de calculs en nombres flottants
+- trap : un trap c'est une interruption, typiquement quand il y a une erreur, une division par zéro, un *interrupt handler* s'occupe de ce genre d'événements.
 
 Tableau retraçant l'utilisation des différentes opérations : 
 
@@ -193,7 +193,7 @@ contenu_rapport += str_integration_image(nomplot, 35)
 contenu_rapport += """
 On remarque que les opérations les plus fréquemment appelées sont les additions d'entiers non signés. Les autres opérations ne sont, hormis la soustraction d'entiers non-signés "subu" qui est appelée un nombre de fois négligeable, même pas appelées du tout.
 
-Maintenant voyons quels résulats l'on obtient avec le profiling avec l'algorithme de Dijkstra :
+Maintenant voyons quels résultats l'on obtient avec le profiling avec l'algorithme de Dijkstra :
 
 ### Pour le benchmark dijkstra
 
@@ -221,7 +221,7 @@ contenu_rapport += """
 
 ## Question 2 :
 
-Dans le cas de blowfish, les instructions majoritaires sont les écritures mémoires (41%) et les calculs en nombre entier (35%). Les branchements conditionelles occupent près de 12\% des instructions et les chargements depuis la mémoire 8%. Le profiling de dijkstra est assez simialaire, avec cette fois plus de chargement depuis la mémoire que d'écriture. Pour obtenir de meilleure performances, il serait judicieux de multiplier les ALUs pour paralléliser les calculs entier, et d'avoir un bon prédicteur de branchement. Le grand nombre d'accès mémoire reste néanmoins un problème.
+Dans le cas de blowfish, les instructions majoritaires sont les écritures mémoires (41%) et les calculs en nombre entier (35%). Les branchements conditionels occupent près de 12\% des instructions et les chargements depuis la mémoire 8%. Le profiling de dijkstra est assez simialaire, avec cette fois plus de chargements depuis la mémoire que d'écriture. Pour obtenir de meilleure performances, il serait judicieux de multiplier les ALUs pour paralléliser les calculs entier, et d'avoir un bon prédicteur de branchement. Le grand nombre d'accès mémoire reste néanmoins un problème.
 """
 
 # --------------------------------------------------------------------------
@@ -279,7 +279,7 @@ contenu_rapport += "\nVoici les résultats du profiling pour le produit de pôly
 contenu_rapport += tableauDePerfs(str_profiling_poly, liste_operations_basic)
 
 contenu_rapport += """
-On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opérations en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynôme requiert également - et à la différence des autres benchmark- une grande part de calcul en nombres flottants (15%), ainsi qu'une part conséquente de soustraction de nombres entiers non-signés.
+On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opérations en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynômes requiert également - et à la différence des autres benchmark - une grande part de calcul en nombres flottants (15%), ainsi qu'une part conséquente de soustraction de nombres entiers non-signés.
 """
 
 # --------------------------------------------------------------------------
@@ -383,7 +383,7 @@ for L1_size in ["1", "2", "4", "8", "16"]:
     f.close
 
 contenu_rapport += """
-Voici maintenant quelques graphes montrant les différences de performances pour différentes tailles de cache L1 :
+Voici maintenant quelques graphes montrant les différences de performance pour différentes tailles de cache L1 :
 
 ### Diagramme en barres de 3 indicateurs de performance de prédiction de branche lors de l'exécution de l'algorithme de Djsktra
 """
@@ -396,7 +396,7 @@ imprimer_multi_plot([1,2,4,8,16], liste_simulations_dij_A7, ["lookups", "updates
 contenu_rapport += str_integration_image("Triple_plot_branche_A7_dij.png","75")
 
 contenu_rapport += """
-On constate que les différences de performance pour la prédiction de branche sont négligeables,de l'ordre de 0.2%, et ne sont pas visibles sur le plot. Cela est normal car les paramètres des prédicteurs sont les mêmes selon les différentes simulations de taille de cache. Il sera plus intéressant de comparer les performances entre les architectures de A7 et A15 car les prédicteurs ne sont pas les mêmes.
+On constate que les différences de performance pour la prédiction de branche sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot. Cela est normal car les paramètres des prédicteurs sont les mêmes selon les différentes simulations de taille de cache. Il sera plus intéressant de comparer les performances entre les architectures de A7 et A15 car les prédicteurs ne sont pas les mêmes.
 
 ### Diagramme en barres de 2 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
 """
@@ -439,7 +439,7 @@ contenu_rapport += """
 Ci-dessus sont tracé en bleu les diagrammes relatifs au cache d'instructions et en orange ceux relatifs au cache de données.
 
 ### Pour le cache d'instructions :
-On observe un saut à partir de 4KB. Nous avons du mal à l'expliquer car le nombre d'accès au cache d'instructions devrait rester identique pour la réalisation d'un même benchmark, car son nombre d'instructions doit rester identique. La fetchqueue a une taille de 4, ce qui signifie que les instructions sont chargées 4 par 4 dans le cache L1. L'on ne devrait pas observer un pallier, à la rigueur une descente plus lisse. On retrouve ce saut inexplicable pour d'autres indicateurs, la seule explication serait un changement de comportement du processeur à partir de 4KB (autre politique d'inclusion / exclusion ou préchargement du cache, peut être en lien avec la taille d'une apge mémoire linux qui est de 4KB).
+On observe un saut à partir de 4KB. Nous avons du mal à l'expliquer car le nombre d'accès au cache d'instructions devrait rester identique pour la réalisation d'un même benchmark. En effet son nombre d'instructions doit rester identique. La fetchqueue a une taille de 4, ce qui signifie que les instructions sont chargées 4 par 4 dans le cache L1. L'on ne devrait pas observer un pallier, à la rigueur une descente plus lisse. On retrouve ce saut inexplicable pour d'autres indicateurs, la seule explication serait un changement de comportement du processeur à partir de 4KB (autre politique d'inclusion / exclusion ou préchargement du cache, peut être en lien avec la taille d'une page mémoire linux qui est de 4KB).
 
 
 Les *misses* baissent avec l'augmentation de la taille du cache, ce qui est normal car si le cache est plus grand, les chances que les données soient présentes dans le cache sont plus grandes. On observe un profil quasi-identique entre misses et replacement puisque si l'on a cache-miss, les données doivent être renouvellées pour remplacer la ligne de cache actuelle par une ligne de cache stockée dans la RAM ce est un *replacement*. Le cache est de type *set-associative* avec une associativité de 2, donc on peut s'imaginer que si la donnée n'est pas présente sur la première ligne de cache du set, elle ne le sera probablement pas sur la deuxième ligne du cache du set. Cela conduit à un *replacement* pour un *miss*.
@@ -461,7 +461,7 @@ for L1_size in ["1", "2", "4", "8", "16"]:
 
 contenu_rapport += """
 
-### Diagramme en barres d'i'ndicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+### Diagramme en barres d'indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
 """
 
 titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
@@ -501,7 +501,7 @@ for L1_size in ["2", "4", "8", "16", "32"]:
 contenu_rapport += """
 ## Question 5 
 
-Contenu identique à la question précédents appliqué à un coeur A15
+Contenu identique à la question précédente appliqué à un coeur A15
 
 Voici maintenant quelques graphes montrant les différences de performances pour différentes tailles de cache L1 :
 
@@ -555,7 +555,7 @@ for L1_size in ["2", "4", "8", "16", "32"]:
 contenu_rapport += """
 
 
-### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
+### Diagramme en barres de 2 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Blowfish
 """
 
 titles = ["Instructions / cycle d'horloge", "Nombre de Cycles"]
@@ -567,7 +567,7 @@ contenu_rapport += str_integration_image("Double_plot_perf_A15_blow.png", "50")
 
 contenu_rapport += """
 
-### Diragrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
+### Diagrammes indicateurs d'utilisation du cache lors de l'exécution de Blowfish
 """
 imprimer_multi_plot(False, liste_simulations_dij_A15, ["il1.accesses", "il1.hits", "il1.misses"], "Triple_plot_cache_A15_blow",
                     ["Accesses", "Hits", "Misses"], [""]*3, [""]*3)
@@ -598,7 +598,7 @@ plt.savefig("plots/compHits")
 
 contenu_rapport += str_integration_image("compHits.png", 75)
 contenu_rapport += """
-Il n'y a pas de différence notable entre les performances des prédicteurs de branchement des processeurs A7 et A15.
+Il n'y a pas de différence notable entre les performances des prédicteurs de branchement des processeurs A7 et A15. Nous assuermons que les benchmark offrent un comportement similaire aux deux prédicteurs.
 """
 
 # --------------------------------------------------------------------------
