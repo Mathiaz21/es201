@@ -16,8 +16,11 @@ Tableau retraçant l'utilisation des différentes opérations :
 | uncond branch | 2.75 |
 | cond branch | 8.83 |
 | int computation | 59.95 |
-| lw | 17.44 |
-| sw | 3.27 |
+| fp computation | 0.00 |
+| trap | 0.00 |
+
+| Opération | Pourcentage d'utilisation |
+|:----------|:-------------------------:|
 | add | 0.00 |
 | addi | 0.00 |
 | addu | 15.92 |
@@ -40,18 +43,8 @@ Maintenant voyons quels résulats l'on obtient avec le profiling avec l'algorith
 | uncond branch | 1.06 |
 | cond branch | 14.69 |
 | int computation | 49.77 |
-| lw | 24.08 |
-| sw | 10.32 |
-| add | 0.00 |
-| addi | 0.00 |
-| addu | 19.01 |
-| addiu | 5.73 |
-| sub | 0.00 |
-| subu | 0.13 |
-| mult | 0.01 |
-| multu | 0.00 |
-| div | 0.00 |
-| divu | 0.01 |
+| fp computation | 0.00 |
+| trap | 0.00 |
 
 Bien que le résultat soit un peu plus équilibré, les opérations d'addition d'entiers non-signés restent largement majoritaires.
 
@@ -73,18 +66,8 @@ Voici les résultats pour le profiling de SSCA2-BCH :
 | uncond branch | 1.06 |
 | cond branch | 14.69 |
 | int computation | 49.77 |
-| lw | 24.08 |
-| sw | 10.32 |
-| add | 0.00 |
-| addi | 0.00 |
-| addu | 19.01 |
-| addiu | 5.73 |
-| sub | 0.00 |
-| subu | 0.13 |
-| mult | 0.01 |
-| multu | 0.00 |
-| div | 0.00 |
-| divu | 0.01 |
+| fp computation | 0.00 |
+| trap | 0.00 |
 
 Voici les résultats du profiling pour SHA-1 
  (Echec de ma part de les faire marcher)
@@ -97,18 +80,8 @@ Voici les résultats du profiling pour le produit de pôlynomes :
 | uncond branch | 0.00 |
 | cond branch | 7.70 |
 | int computation | 46.16 |
-| lw | 0.00 |
-| sw | 0.02 |
-| add | 0.00 |
-| addi | 0.00 |
-| addu | 7.71 |
-| addiu | 15.39 |
-| sub | 0.00 |
-| subu | 7.69 |
-| mult | 0.00 |
-| multu | 0.00 |
-| div | 0.00 |
-| divu | 0.00 |
+| fp computation | 15.37 |
+| trap | 0.00 |
 
 On remarque que ces 5 benchmarks ont tous une répartition des classes d'instruction similaire, avec une majorité d'opérations en nombre entier, et une grande part d'accès mémoire et de branchements conditionels. On remarquera que la multiplication de polynôme requiert également - et à la différence des autres benchmark- une grande part de calcul en nombres flottants (15%), ainsi qu'une part conséquente de soustraction de nombres entiers non-signés.
 
@@ -156,16 +129,67 @@ Du point de vue du cache L1 nous avons aussi les informations suivantes :
 Voici maintenant quelques graphes montrant les différences de performances pour différentes tailles de cache L1 :
 
 ### Diagramme en barres de 3 indicateurs de performance de prédiction de branche lors de l'exécution de l'algorithme de Djsktra
-
 <div style="text-align:center;">
   <img src="plots/Triple_plot_branche_A7_dij.png" alt="Description of the image" style="width:75%;" />
 </div>
-
 On constate que les différences de performance pour la prédiction de branche sont négligeables. À titre d'exemple, la liste des différents nombre de lookups est la suivante : [9886841, 9869054, 9878877, 9879047, 9879450]. Les variations sont négligeables, de l'ordre de 0.2%, et ne sont pas visibles sur le plot.
 
 ### Diagramme en barres de 3 indicateurs de performance du processeur lors de l'exécution de l'algorithme de Djsktra
+<div style="text-align:center;">
+  <img src="plots/Double_plot_perf_A7_dij.png" alt="Description of the image" style="width:50%;" />
+</div>
+## Question 6
+
+Dans le fichie cache.cfg initial, present dans le repertoire du cours, on a les informations par défaut suivantes : 
+>-size (bytes) 524248       (ligne 10) 
+>-block size (bytes) 32     (ligne 17)
+>-associativity 8           (ligne 23)
+>-technology (u) 0.032      (ligne 33) (32nm)
+
+## Question 7
+
+On va adapté 4 fichier de configurations pour simuler respectivement les surfaces :
+
+* d'un cache L1 du cortexA15 
+* d'un cache L1 du cortexA7
+* du cache L2 du cortexA15
+* du cache L2 du cortexA7
+
+en simulant ces différentes configuration avec cacti on a les résultats suivants (dans les fichiers A15L1outputs, A7L1outputs, A15L2outputs, A7L2outputs)
+
+|                             | **A15L1 outputs** | **A7L1 outputs** | **A15L2 outputs** | **A7L2 outputs** |
+|-----------------------------|-------------------|------------------|-------------------|------------------|
+| Data array: Area (mm2):     | 0.0290487         | 0.0290487        | 0.325227          | 0.332022         |
+| Tag array: Area (mm2):      | 0.00411185        | 0.00793606       | 0.0579243         | 0.0983835        |
+| Surface total (somme) (mm2) | 0.03316055        | 0.03698476       | 0.3831513         | 0.4304055        |
+
+Comme on a 2 caches L1 par cortex on multiplie par deux la surface de cache L1 pour avoir le pourcentage de surface occupé par les caches L1.
+>Pour le A15 la surface totale vaut 2mm2 (énnoncé), donc les caches L1 occupent $2 \frac{0.03316055	}{2} = 3.3$% de la surface totale
+>Pour le A7 la surface totale vaut 0.45mm2 (énnoncé), donc les caches L1 occupent $2 \frac{0.03698476}{0.45} = 16,4$% de la surface totale
+
+## Question 8
+
+Pour chaque cortex, on modifie le fichier de configuration de cache L1 en faisant varier la taille de cache de 2^0 à 2^5 kB, et on récupère la nouvelle taille de ce cache
+
 
 <div style="text-align:center;">
-  <img src="plots/Double_plot_perf_A7_dij.png" alt="Description of the image" style="width:75%;" />
+  <img src="./plots_cacti/EvolutionSurfaceL1.png" alt="Description of the image" style="width:50%;" />
 </div>
 
+On constate que la surface des caches augmente avec la taille de cache. Cependant cette augmentation est négligeable comme le montre le graphique ci-dessous de la surface totale en fonction de la taille de cache L1.
+
+<div style="text-align:center;">
+  <img src="./plots_cacti/EvolutionSurfaceTotal.png" alt="Description of the image" style="width:50%;" />
+</div>
+
+Rq: pour avoir la surface totale on sait que dans la question precedente les surfaces totales était de 2mm2 et 0.45mm2 et on a calculé la surface des caches L1 donc on a la nouvelle surface totale avec : 
+$$NewTotalArea = PrevTotalArea - PrevL1Area + NewL1Area$$
+
+
+## Question 9
+
+Il suffit de récupérer les lignes sim_IPC dans les simulation de dijkstra et de blowfish avec différentes tailles de cacheL1 et pour les deux cortex (cf Q4 et Q5) puis utiliser les surfaces notés dans le fichier python ```./cact-simulations/surface_par_taille.py```
+
+<div style="text-align:center;">
+  <img src="./plots_cacti/perf_surfaciques.png" alt="Description of the image" style="width:50%;" />
+</div>

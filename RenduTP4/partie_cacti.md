@@ -31,11 +31,16 @@ Comme on a 2 caches L1 par cortex on multiplie par deux la surface de cache L1 p
 
 Pour chaque cortex, on modifie le fichier de configuration de cache L1 en faisant varier la taille de cache de 2^0 à 2^5 kB, et on récupère la nouvelle taille de ce cache
 
-![./cacti-simulations/EvolutionSurfaceL1.png](./cacti-simulations/EvolutionSurfaceL1.png)
+
+<div style="text-align:center;">
+  <img src="./plots_cacti/EvolutionSurfaceL1.png" alt="Description of the image" style="width:50%;" />
+</div>
 
 On constate que la surface des caches augmente avec la taille de cache. Cependant cette augmentation est négligeable comme le montre le graphique ci-dessous de la surface totale en fonction de la taille de cache L1.
 
-![./cacti-simulations/EvolutionSurfaceL1.png](./cacti-simulations/EvolutionSurfaceTotal.png)
+<div style="text-align:center;">
+  <img src="./plots_cacti/EvolutionSurfaceTotal.png" alt="Description of the image" style="width:50%;" />
+</div>
 
 Rq: pour avoir la surface totale on sait que dans la question precedente les surfaces totales était de 2mm2 et 0.45mm2 et on a calculé la surface des caches L1 donc on a la nouvelle surface totale avec : 
 $$NewTotalArea = PrevTotalArea - PrevL1Area + NewL1Area$$
@@ -44,3 +49,7 @@ $$NewTotalArea = PrevTotalArea - PrevL1Area + NewL1Area$$
 ## Question 9
 
 Il suffit de récupérer les lignes sim_IPC dans les simulation de dijkstra et de blowfish avec différentes tailles de cacheL1 et pour les deux cortex (cf Q4 et Q5) puis utiliser les surfaces notés dans le fichier python ```./cact-simulations/surface_par_taille.py```
+
+<div style="text-align:center;">
+  <img src="./plots_cacti/perf_surfaciques.png" alt="Description of the image" style="width:50%;" />
+</div>
