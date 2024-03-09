@@ -31,3 +31,22 @@ parser.add_option("--cacheline_size", type="int", default=64)
 | **Taille**             | 64kB           | 32kB                | 2MB     |
 | **associativité**      | 2              | 2                   | 8       |
 | **taille de la ligne** | 64             | 64                  | 64      |
+
+
+## Question 4
+
+Pour cette question et pour les (3) suivantes on fixe la taille de la matrice à `m=200`.
+
+Pour un nombre de thread n = 1, 2, 4, 8, 16 (et un nombre de coeur équivalent comme l'impose le mode se), avec la commande suivante:
+```
+$GEM5/configs/example/se.py --cpu-type=arm_detailed --caches -<n> 8 -c test_omp -o "<n> 200"
+```
+On obtient les résultats suivants:
+
+
+
+>nombre de cycles des différents processeurs -> celui avec le plus grand <=> au nb de cycle total de l'appli (pourqoi ?)
+   >on en déduit le nombre de cycle d'exécution de l'application (puis tracé graphe)
+   >en déduire le speedup par rapport à 1 seul thread
+   >récupérer le nb total d'instructions simulées, déterminez quelle est la valeur maximale de l'IPC pour chaque config
+   >
