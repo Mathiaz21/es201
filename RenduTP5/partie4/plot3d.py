@@ -11,6 +11,12 @@ nb_cycles = np.array([
 
 Speedup = 218987 / nb_cycles
 
+nb_instr = np.array([[274203, 294011, 334665],
+                     [274203, 299102, 345963],
+                     [274203, 306251, 373498]])
+
+instrPcycle = nb_instr / nb_cycles
+
 # Créer une grille de données
 x = np.array([2,4,8])
 y = np.array([1,2,4])
@@ -21,12 +27,16 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 # Créer la surface
-ax.plot_surface(X, Y, Speedup, cmap='viridis')
+ax.plot_surface(X, Y, nb_instr, cmap='viridis')
 
 # Ajouter des étiquettes aux axes
+# ax.set_xlabel('Largeur du processeur superscalaire')
+# ax.set_ylabel('Nombre de threads')
+# ax.set_zlabel('SpeedUp')
+
 ax.set_xlabel('Largeur du processeur superscalaire')
 ax.set_ylabel('Nombre de threads')
-ax.set_zlabel('SpeedUp')
+ax.set_zlabel("Nombre d'instructions")
 
 # Afficher le plot
 plt.show()

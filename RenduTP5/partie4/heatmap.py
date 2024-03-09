@@ -12,6 +12,12 @@ nb_cycles = np.array([
 
 Speedup = 218987 / nb_cycles
 
+nb_instr = np.array([[274203, 294011, 334665],
+                     [274203, 299102, 345963],
+                     [274203, 306251, 373498]])
+
+instrPcycle = nb_instr / nb_cycles
+
 # Créer une grille de données régulièrement espacée
 x = np.array([2, 4, 8])
 y = np.array([1, 2, 4])
@@ -21,12 +27,12 @@ X, Y = np.meshgrid(x, y)
 fig, ax = plt.subplots()
 
 # Créer la heatmap
-sns.heatmap(Speedup, xticklabels=x, yticklabels=y, annot=True, fmt='f', cmap='viridis')
+sns.heatmap(nb_instr, xticklabels=x, yticklabels=y, annot=True, fmt='f', cmap='viridis')
 
 # Ajouter des étiquettes aux axes
 ax.set_xlabel('Largeur du processeur superscalaire')
 ax.set_ylabel('Nombre de threads')
-ax.set_title('SpeedUp')
+ax.set_title("Nombre d'instructions")
 
 # Afficher le plot
 plt.show()
