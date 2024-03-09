@@ -101,3 +101,80 @@ On récupère le nombre d'instruction `sim_insts` à la ligne 12, puis en divisa
 ## Question 8
 On voit que le nombre de cycle de l'application diminue avec le nombre de threads (cf q5) ce qui est logique car on répartie le travail sur plusieurs CPUs pour effectuer plus d'instructions à chaque cycle. Dans le même temps, le nombre d'instruction totale augmente car des instructions supplémentaires entre le thread principale et les threads supplémentaires s'ajoutent. Cela explique pourquoi le ratio $\frac{nb\_insts}{nb\_cycles}$ augmente et donc que l'IPC augmente.
 
+
+# Partie 4
+
+## Question 9 
+Les simulations pour un nombre de threads supérieur à 4 (ie pour 8 et 16 threads) n'ont pas pu être faîtes, en effet une erreur de segmentation était renvoyée, et ce même pour une taille de matrice relativement petite (25*25). Nous nous contenterons des valeurs 1, 2 et 4 pour ce qui est du nombre de threads, et des valeurs 2, 4 et 8 pour la largeur du CPU. On obtient les valeurs suivantes pour le nombre de cycles en fontion des paramètres, les résultats seront chaque fois présentés sous la forme d'un graphe 3D et une heatmap. À noter que pour des raisons de clarté de visualisation, le graphe 3D suivant est tourné de 180° selon l'axe z. Les valeur *nombre de thread* et *largeur du CPU* sont ainsi affichées dans l'ordre décroissant.
+
+La commande utilisée pour lancer les simulation est la suivante : 
+```
+$GEM5/build/ARM/gem5.fast $GEM5/configs/example/se.py -w 2 -n 4 -c test_omp -o "4 25"
+```
+Cette commande lance une simulation pour un processeur superscalaire de largeur 2 et pour 4 threads. Tous les calculs matriciels simulés le seront pour des matrice de taille 25*25. 
+
+
+<div style="text-align:center;">
+  <img src="./partie4/plot3dCycles.png" alt="Description of the image" style="width:45%;" />
+  <img src="./partie4/heatmapcycle.png" alt="Description of the image" style="width:45%;" />
+</div>
+
+
+On remarque que le nombre de cycles simulés décroit en fonction de l'augmentation du nombre de threads ou du nombre de voies. Cela est du au fait que plus de composants sont mis en jeu à chaque cycle, pouvant ainsi effectuer plus de d'instruction par cycle. On a ainsi besoin de moins de cycles pour effectuer la la même tâche.
+
+## Question 10
+On obtient les résultats suivants pour le SpeedUp. La référence prise est la simulation effectuée pour 1 thread et une largeur de 2.
+
+<div style="text-align:center;">
+    <tr>
+        <td><img src="./partie4/plot3dSpeedup.png" alt="Description of the image" style="width:45%;" /></td>
+        <td><img src="./partie4/heatmapSpeedup.py" alt="Description of the image" style="width:45%;" /></td>
+    </tr>
+</div>
+
+Attention, le graphe 3D est "retourné" par rapport au graphe 3D de la question précédente.
+
+## Question 11
+
+On calcule l'IPC de la même manière que dans la question précédente, et cela nous donne les résultats suivants :
+
+<div style="text-align:center;">
+  <img src="./partie4/plot3Dinstrpcycles.png" alt="Description of the image" style="width:45%;" />
+  <img src="./partie4/heatmapInstrpcycle.png" alt="Description of the image" style="width:45%;" />
+</div>
+
+On remarque que margré une légère augmentation du nombre total d'instructions avec l'augmentation de la largeur et du nombre de threads (cf ci-dessous), l'IPC augmente suffisamment pour faire baisser le nombre de cycle total.
+
+<div style="text-align:center;">
+  <img src="./partie4/plot3dinstr.png" alt="Description of the image" style="width:45%;" />
+  <img src="./partie4/heatmapInstr.png" alt="Description of the image" style="width:45%;" />
+</div>
+
+
+## Question 12
+
+Malgré l'absence de données pour un nombre de threads supérieur à 4, on peut tirer des conclusions. Le SpeedUp augmente à la fois avec l'augmentation du nombre de threads et avec la largeur du processeur superscalaire. On remarque aussi que nombre total d'instruction augmente peu en fonction du nombre de threads, mais augmente plus fortement avec l'augmentation du nombre de voies. Cela est sûrement dû à des coûts de communication supplémentaires induits par l'augmentation de la taille du processeur. Finalement l'IPC augmente avec le nombre de voies et le nombre de threads malgré cette augmentation du nombre d'instructions. Ainsi la parallélisation est rentable, elle permet de compenser l'augmentation du nombre d'instructions.
+
+## Question 13
+
+La contrainte imposée est l'efficacité surfacique, l'architecture CMP étant à base de coeurs Cortex A15 (étudiés au TP4), on peut s'appuyer sur les résultats fournis par Cacti concernant l'efficacité surfacique. 
+
+<div style="text-align:center;">
+  <img src="./partie4/perf_surfaciques.png" alt="Description of the image" style="width:75%;" />
+</div>
+
+Ce graphe - issu du TP précédent - ne donne pas IPC Surfacique pour un cache L1 de 64kB, utilisé dans les questions précédentes, on admettra donc que les courbes poursuivent les mêmes tendances. On constate donc que l'efficacité surfacique augmente avec la taille du cache L1, il n'est donc pas intéressant de prendre un cache L1 plus petit pour économiser de la place. 
+
+Dans la section précédente, on a constater des performances croissantes avec le nombre de threads et la largeur des voies. Néanmoins, cette augmentation se répercute directement sur la taille du CPU. Partons du principe que la surface augmente proportionnellement avec le nombre de threads. De même, augmenter le nombre de voie nécessite une architecture pipeline plus complexe, et donc plus encombrante, nous ferons donc l'hypothèse que la taille d'un coeur est proportionelle au nombre de voie. 
+
+<div style="text-align:center;">
+  <img src="./efficacite_surfacique.png" alt="Description of the image" style="width:75%;" />
+</div>
+
+On constate que l'architecture a 2 voies et 1 thread est la plus performante en terme d'efficacité surfacique. En réalité, l'hyptohèse selon laquel la surface du processeur est proportionnelle au nombre de thread et au nombre de voie est grossière, un processeur à 8 threads et 8 voies ne prend sûrement pas 32 fois plus de place qu'un processeur à 1 thread et deux voies. Ce raisonnement permet tout de même d'estimer l'efficacité surfacique d'un processeur si on sait avec précision l'encombrement induit par une augmentation du nombre de voies. Si on relache la proportionnalité par rapport au nombre de voies, on obtient le résultat suivant : 
+
+<div style="text-align:center;">
+  <img src="./efficacite_surfacique2.png" alt="Description of the image" style="width:75%;" />
+</div>
+
+Dans tous les cas, on constate que pour garantir une efficacité surfacique maximale, il faut une architecture à 1 seul thread.
