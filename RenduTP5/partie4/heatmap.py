@@ -27,12 +27,12 @@ X, Y = np.meshgrid(x, y)
 fig, ax = plt.subplots()
 
 # Créer la heatmap
-sns.heatmap(nb_instr, xticklabels=x, yticklabels=y, annot=True, fmt='f', cmap='viridis')
+sns.heatmap(nb_cycles, xticklabels=x, yticklabels=y, annot=True, fmt='f', cmap='viridis')
 
 # Ajouter des étiquettes aux axes
 ax.set_xlabel('Largeur du processeur superscalaire')
 ax.set_ylabel('Nombre de threads')
-ax.set_title("Nombre d'instructions")
+ax.set_title("Nombre de cycles du CPU")
 
 # Afficher le plot
 plt.show()

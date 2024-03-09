@@ -27,7 +27,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 # Créer la surface
-ax.plot_surface(X, Y, nb_instr, cmap='viridis')
+ax.plot_surface(X, Y, Speedup, cmap='viridis')
 
 # Ajouter des étiquettes aux axes
 # ax.set_xlabel('Largeur du processeur superscalaire')
@@ -36,7 +36,7 @@ ax.plot_surface(X, Y, nb_instr, cmap='viridis')
 
 ax.set_xlabel('Largeur du processeur superscalaire')
 ax.set_ylabel('Nombre de threads')
-ax.set_zlabel("Nombre d'instructions")
+ax.set_zlabel("SpeedUp")
 
 # Afficher le plot
 plt.show()
