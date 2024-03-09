@@ -10,9 +10,21 @@ L2 commune à tous les coeurs (d'après la figure 20), la matrice B doit être d
 de cohérence de cache). Enfin, la matrice résultat C doit être commune à tous les coeurs, mais il n'y à pas de problème de concurrence de cache, 
 puisque les lignes de la matrice C congruent à p modulo n ne sont modifié que par le processus p. 
 
+Si le cache n'est pas assez grand pour toute la matrice B, cette elle devra être chargée progressivement par colonne dans le cache de de chaque coeur.
+
 ## Question 2
 
-Les problèmes...
+Le fichier O3CPU.py est un fichier de configuration pour un processus super scalaire out-of-order (d'où le nom O3), on retrouve différents paramètres rencontrés en cours:
+
+| fetchWidth | decodeToFetchDelay | commitToFetchDelay | issueWidth | trapLatency |
+|-----------|-----------|-----------|-----------|-----------|
+| 8| 1 | 1 | 8 | 13 |
+
+- **fetchWidth** : fetchWidth correspond au nombres d'instructions pouvant être récupérées en parallèles 
+- **decodeToFetchDelay** : Il s'agit du nombre de cycle d'horloge entre l'étape de décodage et l'étape de fetch dans la pipline d'exécution. On s'attendrait plutôt à avoir une instruction *FetchToDecodeDelay* puisque généralement, les pipelines fetch les instructions pour ensuite les décoder.
+-**commitToFetchDelay** : Le commit correspond à la validation des résultats d'une instruction (qui pourraient être invalidé par une erreur de prédiction de branchement, une dépendance des données...). *commitToFetchDelay* correspond donc au délai en cycle d'horloge entre le moment où les données sont confirmées et le moment où elles peuvent être récupérées depuis la mémoire 
+- **issueWidth** : issueWidth correspond aux nombres d'instruction pouvant être envoyées simulatnément depuis le décodage vers l'étage suivant du pipeline (unité d'exécution ou renommage).
+- **trapLatency** : un trap c'est un interruption, typiquement quand il y a une erreur, une division par zéro, un *interrupt handler* s'occupent de ce genre d'événement. ici trapLentecy = 13, ce qui signifie que l'on considère que 13 cycles sont perdus lors d'un trap
 
 ## Question 3
 
