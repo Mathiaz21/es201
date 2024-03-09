@@ -35,13 +35,13 @@ parser.add_option("--cacheline_size", type="int", default=64)
 
 ## Question 4
 
-Pour cette question et pour les (3) suivantes on fixe la taille de la matrice à `m=25` pour éviter d'avoir des temps de simulation trop longs et car avec 50 on a des erreur segmentation fault pour 2 et 16 threads. Avec m=25 on a quand même un nombre d'opérations et donc d'instructions assez significatif.
+Pour cette question et pour les (3) suivantes on fixe la taille de la matrice à `m=25` pour éviter d'avoir des temps de simulation trop longs et car avec 50 on a des erreurs segmentation fault pour 2 et 16 threads. Avec m=25 on a quand même un nombre d'opérations et donc d'instructions assez significatif.
 
 Pour un nombre de thread n = 1, 2, 4, 8, 16 (et un nombre de coeur équivalent comme l'impose le mode se), avec la commande suivante:
 ```
 $GEM5/configs/example/se.py --cpu-type=arm_detailed --caches -<n> 8 -c test_omp -o "<n> 200"
 ```
-On obtient les résultats suivants pour le nombre de cycles des différents CPU:
+On obtient les résultats les outputs de GEM5 et on les notes dans le dosser partie3 de la forme `stats<n>.txt`. En exécutant `recupOutputs.py` on obtient les nombres de cycles suivants:
 
 |     	| CPU0   	| CPU1   	| CPU2   	| CPU3   	| CPU4   	| CPU5   	| CPU6   	| CPU7   	| CPU8 	| CPU9 	| CPU10 	| CPU11 	| CPU12 	| CPU13 	| CPU14 	| CPU15 	|
 |-----	|--------	|--------	|--------	|--------	|--------	|--------	|--------	|--------	|------	|------	|-------	|-------	|-------	|-------	|-------	|-------	|
@@ -52,7 +52,11 @@ On obtient les résultats suivants pour le nombre de cycles des différents CPU:
 | n=16 | 139384 | 33836 | 33330 | 32829 | 32228 | 31720 | 31208 | 30736 | 29596 | 29025 | 28324 | 27372 | 26628 | 26077 | 25143 | 24714 |
 
 
-C'est toujours le processus 0 qui effectue le plus de cycles. Cela est dûe à ... .Comme son nombre de cycle est le plus important et que ...
+C'est toujours le processus 0 qui effectue le plus de cycles. Cela est certainement dûe à l'initialisation des matrices A et B et la création des threads. 
+En effet, regardons pour n=2, CPU1 effectue environ 74 000 cycles, si on retire ce nombre de cycle au CPU0 qui effectue environ autant de cycle pour calculer, il reste environ $179582 - 74404 = 105178$ cycles effectuer par le CPU0 pour initialiser les matrices et thread. Pour n=4, $152306 - 47074=105232$ cycles pour initaliser matrices et threads, etc...
+
+
+ Comme le nombre de cycle du CPU 0 est le plus important et que, les CPUs travaillent en parallèle dans une architecture multiprocesseurs superscalaire, on en déduit que le temps que le CPU 0 fassent tous ces cycles, les autres CPU auront finis leur calcule, et donc le nombre totale de cycle de l'application se résume à celui du CPU 0.
 
 ## Question 5
 Le nombre de cycles d’exécution de l’application pour les différentes configuration est égale au nombre de cycles du premier processeur
